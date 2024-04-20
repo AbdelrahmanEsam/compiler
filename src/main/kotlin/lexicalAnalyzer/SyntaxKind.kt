@@ -1,6 +1,7 @@
 package com.moj.najiz.lexicalAnalyzer
 
 enum class SyntaxKind {
-    Number, WhiteSpace, PlusToken, MinusToken, MultiplyToken, DivideToken,
-    SlashToken, OpenBracketToken, CloseBracketToken, BadToken, EndOfFileToken, BinaryExpressionSyntax
+    Number, WhiteSpace, PlusToken, MinusToken, MultiplyToken,
+    SlashToken, OpenBracketToken, CloseBracketToken, BadToken, EndOfFileToken, BinaryExpressionSyntax,
+    ParenthesizedExpressionSyntax
 }

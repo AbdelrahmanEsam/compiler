@@ -1,6 +1,6 @@
 package com.moj.najiz.lexicalAnalyzer
 
-import com.moj.najiz.parser.nodes.SyntaxToken
+import com.moj.najiz.nodes.SyntaxToken
 
 class LexicalAnalyzer(private val text: String) {
 
@@ -18,6 +18,8 @@ class LexicalAnalyzer(private val text: String) {
         get() {
             return if (position >= text.length) null else text[position]
         }
+
+    private val diagnostics : MutableList<String> = mutableListOf()
 
     private fun next() {
         position++
@@ -74,6 +76,9 @@ class LexicalAnalyzer(private val text: String) {
             )
         }
 
+
+
+        diagnostics.add("error bad character in input : $currentChar")
         return SyntaxToken(
             SyntaxKind.BadToken,
             position++,

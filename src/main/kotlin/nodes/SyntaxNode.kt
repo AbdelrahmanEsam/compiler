@@ -1,4 +1,4 @@
-package com.moj.najiz.parser.nodes
+package com.moj.najiz.nodes
 
 import com.moj.najiz.lexicalAnalyzer.SyntaxKind
 

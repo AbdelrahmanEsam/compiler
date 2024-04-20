@@ -1,11 +1,11 @@
-package com.moj.najiz.parser.nodes
+package com.moj.najiz.nodes
 
 import com.moj.najiz.lexicalAnalyzer.SyntaxKind
 
 class BinaryExpressionSyntax(
-    private val left: SyntaxNode,
+    private val left: ExpressionSyntax,
     private val operatorToken: SyntaxToken,
-    private val right: SyntaxNode,
+    private val right: ExpressionSyntax,
 ) : ExpressionSyntax() {
 
     override val kind: SyntaxKind
@@ -13,10 +13,10 @@ class BinaryExpressionSyntax(
 
     override val children: List<SyntaxNode> = listOf(left, operatorToken, right)
 
-    val leftExpression: SyntaxNode
+    val leftExpression: ExpressionSyntax
         get() = left
 
-    val rightExpression: SyntaxNode
+    val rightExpression: ExpressionSyntax
         get() = right
 
     val operator: SyntaxToken
