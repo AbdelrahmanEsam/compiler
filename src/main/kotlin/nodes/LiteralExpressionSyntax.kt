@@ -2,7 +2,7 @@ package com.moj.najiz.nodes
 
 import com.moj.najiz.lexicalAnalyzer.SyntaxKind
 
-class NumberExpressionSyntax(private val number: SyntaxToken) : ExpressionSyntax() {
+class LiteralExpressionSyntax(private val number: SyntaxToken) : ExpressionSyntax() {
 
     val numberToken: SyntaxToken
         get() {
@@ -10,7 +10,7 @@ class NumberExpressionSyntax(private val number: SyntaxToken) : ExpressionSyntax
         }
 
     override val kind: SyntaxKind
-        get() = SyntaxKind.Number
+        get() = SyntaxKind.Expression.LiteralExpressionSyntax
 
 
     override val children: List<SyntaxNode> = listOf(number)

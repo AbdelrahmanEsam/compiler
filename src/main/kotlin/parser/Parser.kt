@@ -16,9 +16,9 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
     private fun getTokens() {
 
         do {
-            val token = lexicalAnalyzer.nextToken()
-            if (token.kind != SyntaxKind.BadToken && token.kind != SyntaxKind.WhiteSpace) tokens.add(token)
-        } while (token.kind != SyntaxKind.EndOfFileToken)
+            val token = lexicalAnalyzer.lex()
+            if (token.kind != SyntaxKind.Token.BadToken && token.kind != SyntaxKind.Token.WhiteSpace) tokens.add(token)
+        } while (token.kind != SyntaxKind.Token.EndOfFileToken)
     }
 
     private fun peek(offset: Int): SyntaxToken {
@@ -49,44 +49,34 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
     }
 
     fun parse(): SyntaxTree {
-        val expression = parseTerm()
-        val endOfFileToken = match(SyntaxKind.EndOfFileToken)
+        val expression = parseExpression()
+        val endOfFileToken = match(SyntaxKind.Token.EndOfFileToken)
         return SyntaxTree(diagnostics, expression, endOfFileToken)
     }
 
-
-    private fun parseTerm(): ExpressionSyntax {
-        var left = parseMultiplicativeExpression()
-        while (current.kind == SyntaxKind.PlusToken || current.kind == SyntaxKind.MinusToken) {
-            val operator = nextToken()
-            val right = parseMultiplicativeExpression()
-            left = BinaryExpressionSyntax(left, operator, right)
-
-        }
-        return left
-    }
-
-    private fun parseMultiplicativeExpression(): ExpressionSyntax {
+    private fun parseExpression(parentPriority: Int = 0): ExpressionSyntax {
         var left = parsePrimaryExpression()
-        while (current.kind == SyntaxKind.MultiplyToken || current.kind == SyntaxKind.SlashToken
-        ) {
-            val operator = nextToken()
-            val right = parsePrimaryExpression()
-            left = BinaryExpressionSyntax(left, operator, right)
+        while (true) {
+            val tokenPriority = current.kind.getBinaryPriority()
+            if (tokenPriority == 0 || tokenPriority <= parentPriority) break
+            val operatorToken = nextToken()
+            val right = parseExpression(tokenPriority)
+            left = BinaryExpressionSyntax(left, operatorToken, right)
         }
         return left
     }
+
 
     private fun parsePrimaryExpression(): ExpressionSyntax {
-        if (current.kind == SyntaxKind.OpenBracketToken) {
+        if (current.kind == SyntaxKind.Token.OpenBracketToken) {
             val left = nextToken()
-            val expression = parseTerm()
-            val right = match(SyntaxKind.CloseBracketToken)
+            val expression = parseExpression()
+            val right = match(SyntaxKind.Token.CloseBracketToken)
             val parenthesizedExpressionSyntax = ParenthesizedExpressionSyntax(left, expression, right)
             return parenthesizedExpressionSyntax
         }
-        val numberToken = match(SyntaxKind.Number)
-        return NumberExpressionSyntax(numberToken)
+        val literalToken = match(SyntaxKind.Expression.LiteralExpressionSyntax)
+        return LiteralExpressionSyntax(literalToken)
     }
 
     init {

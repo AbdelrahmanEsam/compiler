@@ -15,5 +15,5 @@ class ParenthesizedExpressionSyntax(
 
     override val children: List<SyntaxNode> = listOf(openToken, expression, closeToken)
 
-    override val kind: SyntaxKind = SyntaxKind.ParenthesizedExpressionSyntax
+    override val kind: SyntaxKind = SyntaxKind.Expression.ParenthesizedExpressionSyntax
 }

@@ -1,10 +1,7 @@
 package com.moj.najiz.expressionEvaluator
 
 import com.moj.najiz.lexicalAnalyzer.SyntaxKind
-import com.moj.najiz.nodes.BinaryExpressionSyntax
-import com.moj.najiz.nodes.ExpressionSyntax
-import com.moj.najiz.nodes.NumberExpressionSyntax
-import com.moj.najiz.nodes.ParenthesizedExpressionSyntax
+import com.moj.najiz.nodes.*
 
 class Evaluator(private val root: ExpressionSyntax) {
 
@@ -14,7 +11,7 @@ class Evaluator(private val root: ExpressionSyntax) {
 
 
     private fun evaluateExpression(expression: ExpressionSyntax): Int {
-        if (expression is NumberExpressionSyntax) {
+        if (expression is LiteralExpressionSyntax) {
             return expression.numberToken.actualValue as Int
         }
 
@@ -23,19 +20,19 @@ class Evaluator(private val root: ExpressionSyntax) {
             val rightEvaluation = evaluateExpression(expression.rightExpression)
 
             return when (expression.operator.kind) {
-                SyntaxKind.PlusToken -> {
+                SyntaxKind.Token.PlusToken -> {
                     leftEvaluation + rightEvaluation
                 }
 
-                SyntaxKind.MinusToken -> {
+                SyntaxKind.Token.MinusToken -> {
                     leftEvaluation - rightEvaluation
                 }
 
-                SyntaxKind.SlashToken -> {
+                SyntaxKind.Token.SlashToken -> {
                     leftEvaluation / rightEvaluation
                 }
 
-                SyntaxKind.MultiplyToken -> {
+                SyntaxKind.Token.MultiplyToken -> {
                     leftEvaluation * rightEvaluation
                 }
 
@@ -44,6 +41,21 @@ class Evaluator(private val root: ExpressionSyntax) {
             }
 
 
+        }
+
+        if (expression is UnaryExpressionSyntax) {
+            val operand = evaluateExpression(expression.operandExpression)
+            return when (expression.operator.kind) {
+                SyntaxKind.Token.PlusToken -> {
+                    operand
+                }
+
+                SyntaxKind.Token.MinusToken -> {
+                    -operand
+                }
+
+                else -> throw Exception("unExpected unary  operator ${expression.kind}")
+            }
         }
 
         if (expression is ParenthesizedExpressionSyntax) {

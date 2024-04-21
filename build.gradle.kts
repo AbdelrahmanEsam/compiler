@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.9.23"
+    alias(libs.plugins.kotlin.jvm)
 }
 
 group = "com.moj.najiz"
@@ -10,12 +10,12 @@ repositories {
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
+    testImplementation(libs.kotlin.test)
 }
 
 tasks.test {
     useJUnitPlatform()
 }
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(libs.versions.java.get().toInt())
 }

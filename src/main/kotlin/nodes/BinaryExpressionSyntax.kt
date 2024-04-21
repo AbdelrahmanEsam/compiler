@@ -9,7 +9,7 @@ class BinaryExpressionSyntax(
 ) : ExpressionSyntax() {
 
     override val kind: SyntaxKind
-        get() = SyntaxKind.BinaryExpressionSyntax
+        get() = SyntaxKind.Expression.BinaryExpressionSyntax
 
     override val children: List<SyntaxNode> = listOf(left, operatorToken, right)
 

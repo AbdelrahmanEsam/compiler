@@ -5,12 +5,12 @@ import com.moj.najiz.nodes.SyntaxToken
 class LexicalAnalyzer(private val text: String) {
 
     private val specialTokens = mapOf(
-        '+' to SyntaxKind.PlusToken,
-        '-' to SyntaxKind.MinusToken,
-        '/' to SyntaxKind.SlashToken,
-        '*' to SyntaxKind.MultiplyToken,
-        '(' to SyntaxKind.OpenBracketToken,
-        ')' to SyntaxKind.CloseBracketToken,
+        '+' to SyntaxKind.Token.PlusToken,
+        '-' to SyntaxKind.Token.MinusToken,
+        '/' to SyntaxKind.Token.SlashToken,
+        '*' to SyntaxKind.Token.MultiplyToken,
+        '(' to SyntaxKind.Token.OpenBracketToken,
+        ')' to SyntaxKind.Token.CloseBracketToken,
     )
     private var position: Int = 0
 
@@ -25,11 +25,11 @@ class LexicalAnalyzer(private val text: String) {
         position++
     }
 
-    fun nextToken(): SyntaxToken {
+    fun lex(): SyntaxToken {
 
         if (position >= text.length) {
             return SyntaxToken(
-                SyntaxKind.EndOfFileToken,
+                SyntaxKind.Token.EndOfFileToken,
                 position,
                 "\u0000",
                 null
@@ -46,7 +46,7 @@ class LexicalAnalyzer(private val text: String) {
                 this.toInt()
             }.getOrNull()
             return SyntaxToken(
-                SyntaxKind.Number,
+                SyntaxKind.Expression.LiteralExpressionSyntax,
                 position,
                 currentToken,
                 actualValue
@@ -59,7 +59,7 @@ class LexicalAnalyzer(private val text: String) {
             val length = position
             val currentToken = text.substring(start, length)
             return SyntaxToken(
-                SyntaxKind.WhiteSpace,
+                SyntaxKind.Token.WhiteSpace,
                 position,
                 currentToken,
                 "space"
@@ -69,7 +69,7 @@ class LexicalAnalyzer(private val text: String) {
         if (specialTokens.keys.contains(currentChar)) {
             val currentToken = currentChar
             return SyntaxToken(
-                specialTokens[currentToken] ?: SyntaxKind.BadToken,
+                specialTokens[currentToken] ?: SyntaxKind.Token.BadToken,
                 position++,
                 currentToken.toString(),
                 null
@@ -80,7 +80,7 @@ class LexicalAnalyzer(private val text: String) {
 
         diagnostics.add("error bad character in input : $currentChar")
         return SyntaxToken(
-            SyntaxKind.BadToken,
+            SyntaxKind.Token.BadToken,
             position++,
             currentChar.toString(),
             null
