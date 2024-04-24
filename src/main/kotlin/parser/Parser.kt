@@ -55,7 +55,18 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
     }
 
     private fun parseExpression(parentPriority: Int = 0): ExpressionSyntax {
-        var left = parsePrimaryExpression()
+        var left : ExpressionSyntax
+        var unaryOperatorPriority = current.kind.getUnaryPriority()
+        if(unaryOperatorPriority !=  0 && unaryOperatorPriority > parentPriority)
+        {
+
+            val operatorToken = nextToken()
+            val operand =  parsePrimaryExpression()
+            left = UnaryExpressionSyntax(operand,operatorToken )
+
+        }else{
+           left = parsePrimaryExpression()
+        }
         while (true) {
             val tokenPriority = current.kind.getBinaryPriority()
             if (tokenPriority == 0 || tokenPriority <= parentPriority) break
