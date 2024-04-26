@@ -1,6 +1,6 @@
 package com.moj.najiz.lexicalAnalyzer
 
-import com.moj.najiz.nodes.SyntaxToken
+import com.moj.najiz.nodes.syntax.SyntaxToken
 
 class LexicalAnalyzer(private val text: String) {
 

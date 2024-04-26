@@ -1,10 +1,10 @@
-package com.moj.najiz.nodes
+package com.moj.najiz.nodes.syntax
 
 import com.moj.najiz.lexicalAnalyzer.SyntaxKind
 
 class LiteralExpressionSyntax(private val number: SyntaxToken) : ExpressionSyntax() {
 
-    val numberToken: SyntaxToken
+    val literalToken: SyntaxToken
         get() {
             return number
         }

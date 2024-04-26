@@ -2,7 +2,7 @@ package com.moj.najiz.parser
 
 import com.moj.najiz.lexicalAnalyzer.LexicalAnalyzer
 import com.moj.najiz.lexicalAnalyzer.SyntaxKind
-import com.moj.najiz.nodes.*
+import com.moj.najiz.nodes.syntax.*
 
 class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
     private var position = 0

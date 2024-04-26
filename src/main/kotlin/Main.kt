@@ -3,8 +3,8 @@ package com.moj.najiz
 import com.moj.najiz.expressionEvaluator.Evaluator
 import com.moj.najiz.lexicalAnalyzer.LexicalAnalyzer
 import com.moj.najiz.parser.Parser
-import com.moj.najiz.nodes.SyntaxNode
-import com.moj.najiz.nodes.SyntaxToken
+import com.moj.najiz.nodes.syntax.SyntaxNode
+import com.moj.najiz.nodes.syntax.SyntaxToken
 
 fun main() {
 

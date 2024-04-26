@@ -1,7 +1,7 @@
 package com.moj.najiz.expressionEvaluator
 
 import com.moj.najiz.lexicalAnalyzer.SyntaxKind
-import com.moj.najiz.nodes.*
+import com.moj.najiz.nodes.syntax.*
 
 class Evaluator(private val root: ExpressionSyntax) {
 
@@ -12,7 +12,7 @@ class Evaluator(private val root: ExpressionSyntax) {
 
     private fun evaluateExpression(expression: ExpressionSyntax): Int {
         if (expression is LiteralExpressionSyntax) {
-            return expression.numberToken.actualValue as Int
+            return expression.literalToken.actualValue as Int
         }
 
         if (expression is BinaryExpressionSyntax) {

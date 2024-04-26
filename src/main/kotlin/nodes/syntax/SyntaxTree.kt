@@ -1,4 +1,4 @@
-package com.moj.najiz.nodes
+package com.moj.najiz.nodes.syntax
 
 data class SyntaxTree(
     val diagnostics: List<String>,
