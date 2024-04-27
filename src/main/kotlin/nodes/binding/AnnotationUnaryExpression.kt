@@ -13,4 +13,8 @@ class AnnotationUnaryExpression(
 
     val annotationExpression: AnnotationExpression
         get() = _annotationExpression
+
+
+    override val value: Any
+        get() = _operatorKind
 }

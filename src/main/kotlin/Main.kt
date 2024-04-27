@@ -2,6 +2,7 @@ package com.moj.najiz
 
 import com.moj.najiz.expressionEvaluator.Evaluator
 import com.moj.najiz.lexicalAnalyzer.LexicalAnalyzer
+import com.moj.najiz.nodes.binding.Annotator
 import com.moj.najiz.parser.Parser
 import com.moj.najiz.nodes.syntax.SyntaxNode
 import com.moj.najiz.nodes.syntax.SyntaxToken
@@ -18,8 +19,10 @@ fun main() {
             syntaxTree.diagnostics.forEach {
                 println(it)
             }
-        }else{
-            val evaluator = Evaluator(syntaxTree.root)
+        } else {
+            val annotator = Annotator()
+            val annotatedRoot = annotator.annotate(syntaxTree.root)
+            val evaluator = Evaluator(annotatedRoot)
             val evaluationResult = evaluator.getEvaluator()
             println(evaluationResult)
         }

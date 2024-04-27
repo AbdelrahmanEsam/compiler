@@ -10,6 +10,7 @@ repositories {
 }
 
 dependencies {
+    implementation(libs.kotlin.reflection)
     testImplementation(libs.kotlin.test)
 }
 

@@ -1,66 +1,63 @@
 package com.moj.najiz.expressionEvaluator
 
-import com.moj.najiz.lexicalAnalyzer.SyntaxKind
-import com.moj.najiz.nodes.syntax.*
+import com.moj.najiz.nodes.binding.*
 
-class Evaluator(private val root: ExpressionSyntax) {
+class Evaluator(private val root: AnnotationExpression) {
 
     fun getEvaluator(): Int {
         return evaluateExpression(root)
     }
 
 
-    private fun evaluateExpression(expression: ExpressionSyntax): Int {
-        if (expression is LiteralExpressionSyntax) {
-            return expression.literalToken.actualValue as Int
+    private fun evaluateExpression(expression: AnnotationExpression): Int {
+        if (expression is AnnotationLiteralExpression) {
+            return expression.value as Int
         }
 
-        if (expression is BinaryExpressionSyntax) {
+        if (expression is AnnotationBinaryExpression) {
             val leftEvaluation = evaluateExpression(expression.leftExpression)
             val rightEvaluation = evaluateExpression(expression.rightExpression)
 
-            return when (expression.operator.kind) {
-                SyntaxKind.Token.PlusToken -> {
+            return when (expression.operandKind) {
+                AnnotationBinaryOperatorKind.Addition -> {
                     leftEvaluation + rightEvaluation
                 }
 
-                SyntaxKind.Token.MinusToken -> {
+                AnnotationBinaryOperatorKind.Subtraction -> {
                     leftEvaluation - rightEvaluation
                 }
 
-                SyntaxKind.Token.SlashToken -> {
+                AnnotationBinaryOperatorKind.Division -> {
                     leftEvaluation / rightEvaluation
                 }
 
-                SyntaxKind.Token.MultiplyToken -> {
+                AnnotationBinaryOperatorKind.Multiplication -> {
                     leftEvaluation * rightEvaluation
                 }
 
 
-                else -> throw Exception("unExpected binary operator ${expression.kind}")
+                else -> throw Exception("unExpected binary operator ${expression.operandKind}")
             }
 
 
         }
 
-        if (expression is UnaryExpressionSyntax) {
-            val operand = evaluateExpression(expression.operandExpression)
-            return when (expression.operator.kind) {
-                SyntaxKind.Token.PlusToken -> {
+        if (expression is AnnotationUnaryExpression) {
+            val operand = evaluateExpression(expression.annotationExpression)
+            return when (expression.operandKind) {
+                AnnotationUnaryOperatorKind.Identity -> {
                     operand
                 }
 
-                SyntaxKind.Token.MinusToken -> {
+                AnnotationUnaryOperatorKind.Negation -> {
                     -operand
                 }
 
-                else -> throw Exception("unExpected unary  operator ${expression.kind}")
+                else -> throw Exception("unExpected unary  operator ${expression.operandKind}")
             }
         }
 
-        if (expression is ParenthesizedExpressionSyntax) {
-            return evaluateExpression(expression.coreExpression)
-        }
-        throw Exception("unExpected node operator kind ${expression.kind}")
+//
+        throw Exception("unExpected node operator kind ${expression.annotationKind}")
     }
 }

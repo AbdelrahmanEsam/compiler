@@ -17,4 +17,8 @@ class AnnotationBinaryExpression(
 
     val leftExpression: AnnotationExpression
         get() = _left
+
+    override val value: Any
+        get() = _left.value
+
 }
