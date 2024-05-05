@@ -2,17 +2,22 @@ package com.moj.najiz.nodes.syntax
 
 import com.moj.najiz.lexicalAnalyzer.SyntaxKind
 
-class LiteralExpressionSyntax(private val number: SyntaxToken) : ExpressionSyntax() {
+class LiteralExpressionSyntax(private val token: SyntaxToken, private val _value: Any?) : ExpressionSyntax() {
+
+    constructor(number: SyntaxToken) : this(number, number.actualValue)
 
     val literalToken: SyntaxToken
         get() {
-            return number
+            return token
         }
 
     override val kind: SyntaxKind
         get() = SyntaxKind.Expression.LiteralExpressionSyntax
 
+    val value: Any?
+        get() = _value
 
-    override val children: List<SyntaxNode> = listOf(number)
+
+    override val children: List<SyntaxNode> = listOf(token)
 
 }

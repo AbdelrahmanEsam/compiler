@@ -1,6 +1,7 @@
 package com.moj.najiz.nodes.binding
 
 import com.moj.najiz.lexicalAnalyzer.SyntaxKind
+import com.moj.najiz.lexicalAnalyzer.SyntaxKind.*
 import com.moj.najiz.nodes.syntax.*
 
 class Annotator {
@@ -10,9 +11,9 @@ class Annotator {
 
     fun annotate(expression: ExpressionSyntax): AnnotationExpression {
         return when (expression.kind) {
-            SyntaxKind.Expression.BinaryExpressionSyntax -> (expression as BinaryExpressionSyntax).annotateBinaryExpression()
-            SyntaxKind.Expression.LiteralExpressionSyntax -> (expression as LiteralExpressionSyntax).annotateLiteralExpression()
-            SyntaxKind.Expression.UnaryExpressionSyntax -> (expression as UnaryExpressionSyntax).annotateUnaryExpression()
+            Expression.BinaryExpressionSyntax -> (expression as BinaryExpressionSyntax).annotateBinaryExpression()
+            Expression.LiteralExpressionSyntax -> (expression as LiteralExpressionSyntax).annotateLiteralExpression()
+            Expression.UnaryExpressionSyntax -> (expression as UnaryExpressionSyntax).annotateUnaryExpression()
             else -> throw Exception("unexpected token ${expression.kind}")
         }
     }
@@ -44,7 +45,7 @@ class Annotator {
     }
 
     private fun LiteralExpressionSyntax.annotateLiteralExpression(): AnnotationExpression {
-        return AnnotationLiteralExpression(if (literalToken.actualValue != null) literalToken.actualValue!! else 0)
+        return AnnotationLiteralExpression(if (value != null) value!! else 0)
     }
 
 
@@ -70,19 +71,29 @@ class Annotator {
         return annotatedOperand
     }
 
+    //todo fix issue here
     private fun annotateUnaryOperatorKind(
         operandKind: SyntaxKind,
         annotationKind: Any,
     ): AnnotationUnaryOperatorKind? {
 
-        if (annotationKind !is Int) return null
 
-        return when (operandKind) {
-            SyntaxKind.Token.PlusToken -> AnnotationUnaryOperatorKind.Identity
-            SyntaxKind.Token.MinusToken -> AnnotationUnaryOperatorKind.Negation
-            else -> throw Exception("unexpected token $operandKind")
+        if (annotationKind is Int) {
+            return when (operandKind) {
+                Token.MathOperatorsToken.PlusToken -> AnnotationUnaryOperatorKind.Identity
+                Token.MathOperatorsToken.MinusToken -> AnnotationUnaryOperatorKind.Negation
+                else -> throw Exception("unexpected token $operandKind")
 
+            }
         }
+
+        if (annotationKind is Boolean) {
+            return when (operandKind) {
+                Token.BooleanOperatorToken.NotToken -> AnnotationUnaryOperatorKind.LogicalNegation
+                else -> throw Exception("unexpected token $operandKind")
+            }
+        }
+        return null
     }
 
     private fun annotateBinaryExpressionKind(
@@ -91,16 +102,25 @@ class Annotator {
         rightValue: Any
     ): AnnotationBinaryOperatorKind? {
 
-        if (leftValue !is Int || rightValue !is Int)
-            return null
-
-        return when (operandKind) {
-            SyntaxKind.Token.PlusToken -> AnnotationBinaryOperatorKind.Addition
-            SyntaxKind.Token.MinusToken -> AnnotationBinaryOperatorKind.Subtraction
-            SyntaxKind.Token.MultiplyToken -> AnnotationBinaryOperatorKind.Multiplication
-            SyntaxKind.Token.SlashToken -> AnnotationBinaryOperatorKind.Division
-            else -> throw Exception("unexpected token $operandKind")
+        if (leftValue is Int || rightValue is Int) {
+            return when (operandKind) {
+                Token.MathOperatorsToken.PlusToken -> AnnotationBinaryOperatorKind.Addition
+                Token.MathOperatorsToken.MinusToken -> AnnotationBinaryOperatorKind.Subtraction
+                Token.MathOperatorsToken.MultiplyToken -> AnnotationBinaryOperatorKind.Multiplication
+                Token.MathOperatorsToken.SlashToken -> AnnotationBinaryOperatorKind.Division
+                else -> throw Exception("unexpected token $operandKind")
+            }
         }
+
+        if (leftValue is Boolean || rightValue is Boolean) {
+            return when (operandKind) {
+                Token.BooleanOperatorToken.AndToken -> AnnotationBinaryOperatorKind.LogicalAnd
+                Token.BooleanOperatorToken.OrToken -> AnnotationBinaryOperatorKind.LogicalOr
+                else -> throw Exception("unexpected token $operandKind")
+            }
+        }
+
+        return null
     }
 
 }

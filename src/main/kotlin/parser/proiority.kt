@@ -1,19 +1,22 @@
 package com.moj.najiz.parser
 
 import com.moj.najiz.lexicalAnalyzer.SyntaxKind
+import com.moj.najiz.lexicalAnalyzer.SyntaxKind.Token.*
 
-
- fun SyntaxKind.getBinaryPriority(): Int {
+fun SyntaxKind.getBinaryPriority(): Int {
     return when (this) {
-        SyntaxKind.Token.PlusToken, SyntaxKind.Token.MinusToken -> 1
-        SyntaxKind.Token.MultiplyToken, SyntaxKind.Token.SlashToken -> 2
+        MathOperatorsToken.PlusToken, MathOperatorsToken.MinusToken -> 4
+        MathOperatorsToken.MultiplyToken, MathOperatorsToken.SlashToken -> 3
+        BooleanOperatorToken.AndToken -> 2
+        BooleanOperatorToken.OrToken -> 1
         else -> 0
     }
 }
 
 fun SyntaxKind.getUnaryPriority(): Int {
     return when (this) {
-        SyntaxKind.Token.PlusToken, SyntaxKind.Token.MinusToken -> 3
+        MathOperatorsToken.PlusToken, MathOperatorsToken.MinusToken -> 5
+        BooleanOperatorToken.NotToken -> 5
         else -> 0
     }
 }

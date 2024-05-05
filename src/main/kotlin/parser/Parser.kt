@@ -17,7 +17,9 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
 
         do {
             val token = lexicalAnalyzer.lex()
-            if (token.kind != SyntaxKind.Token.BadToken && token.kind != SyntaxKind.Token.WhiteSpace) tokens.add(token)
+            if (token.kind != SyntaxKind.Token.BadToken && token.kind != SyntaxKind.Token.WhiteSpaceToken) tokens.add(
+                token
+            )
         } while (token.kind != SyntaxKind.Token.EndOfFileToken)
     }
 
@@ -55,17 +57,16 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
     }
 
     private fun parseExpression(parentPriority: Int = 0): ExpressionSyntax {
-        var left : ExpressionSyntax
-        var unaryOperatorPriority = current.kind.getUnaryPriority()
-        if(unaryOperatorPriority !=  0 && unaryOperatorPriority > parentPriority)
-        {
+        var left: ExpressionSyntax
+        val unaryOperatorPriority = current.kind.getUnaryPriority()
+        if (unaryOperatorPriority != 0 && unaryOperatorPriority > parentPriority) {
 
             val operatorToken = nextToken()
-            val operand =  parsePrimaryExpression()
-            left = UnaryExpressionSyntax(operand,operatorToken )
+            val operand = parsePrimaryExpression()
+            left = UnaryExpressionSyntax(operand, operatorToken)
 
-        }else{
-           left = parsePrimaryExpression()
+        } else {
+            left = parsePrimaryExpression()
         }
         while (true) {
             val tokenPriority = current.kind.getBinaryPriority()
@@ -79,15 +80,28 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
 
 
     private fun parsePrimaryExpression(): ExpressionSyntax {
-        if (current.kind == SyntaxKind.Token.OpenBracketToken) {
-            val left = nextToken()
-            val expression = parseExpression()
-            val right = match(SyntaxKind.Token.CloseBracketToken)
-            val parenthesizedExpressionSyntax = ParenthesizedExpressionSyntax(left, expression, right)
-            return parenthesizedExpressionSyntax
+        when (current.kind) {
+            SyntaxKind.Token.OpenBracketToken -> {
+                val left = nextToken()
+                val expression = parseExpression()
+                val right = match(SyntaxKind.Token.CloseBracketToken)
+                val parenthesizedExpressionSyntax = ParenthesizedExpressionSyntax(left, expression, right)
+                return parenthesizedExpressionSyntax
+            }
+
+            SyntaxKind.Token.BooleanToken.TrueToken,
+            SyntaxKind.Token.BooleanToken.FalseToken
+            -> {
+                val value = current.kind == SyntaxKind.Token.BooleanToken.TrueToken
+                val keywordToken = nextToken()
+                return LiteralExpressionSyntax(keywordToken, value)
+            }
+
+            else -> {
+                val literalToken = match(SyntaxKind.Expression.LiteralExpressionSyntax)
+                return LiteralExpressionSyntax(literalToken)
+            }
         }
-        val literalToken = match(SyntaxKind.Expression.LiteralExpressionSyntax)
-        return LiteralExpressionSyntax(literalToken)
     }
 
     init {

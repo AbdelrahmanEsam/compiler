@@ -5,4 +5,6 @@ interface AnnotationBinaryOperatorKind {
     data object Subtraction : AnnotationBinaryOperatorKind
     data object Division : AnnotationBinaryOperatorKind
     data object Multiplication : AnnotationBinaryOperatorKind
+    data object LogicalAnd : AnnotationBinaryOperatorKind
+    data object LogicalOr : AnnotationBinaryOperatorKind
 }

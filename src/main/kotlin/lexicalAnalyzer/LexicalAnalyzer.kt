@@ -1,17 +1,11 @@
 package com.moj.najiz.lexicalAnalyzer
 
 import com.moj.najiz.nodes.syntax.SyntaxToken
+import com.moj.najiz.nodes.syntax.getKeywordKind
 
 class LexicalAnalyzer(private val text: String) {
 
-    private val specialTokens = mapOf(
-        '+' to SyntaxKind.Token.PlusToken,
-        '-' to SyntaxKind.Token.MinusToken,
-        '/' to SyntaxKind.Token.SlashToken,
-        '*' to SyntaxKind.Token.MultiplyToken,
-        '(' to SyntaxKind.Token.OpenBracketToken,
-        ')' to SyntaxKind.Token.CloseBracketToken,
-    )
+
     private var position: Int = 0
 
     private val currentChar: Char?
@@ -19,7 +13,7 @@ class LexicalAnalyzer(private val text: String) {
             return if (position >= text.length) null else text[position]
         }
 
-    private val diagnostics : MutableList<String> = mutableListOf()
+    private val diagnostics: MutableList<String> = mutableListOf()
 
     private fun next() {
         position++
@@ -32,7 +26,7 @@ class LexicalAnalyzer(private val text: String) {
                 SyntaxKind.Token.EndOfFileToken,
                 position,
                 "\u0000",
-                null
+                "\u0000"
             )
         }
 
@@ -59,32 +53,117 @@ class LexicalAnalyzer(private val text: String) {
             val length = position
             val currentToken = text.substring(start, length)
             return SyntaxToken(
-                SyntaxKind.Token.WhiteSpace,
+                SyntaxKind.Token.WhiteSpaceToken,
                 position,
                 currentToken,
                 "space"
             )
         }
 
-        if (specialTokens.keys.contains(currentChar)) {
-            val currentToken = currentChar
+        if (currentChar?.isLetter() == true) {
+            val start = position
+            while (currentChar?.isLetter() == true) next()
+            val length = position
+            val currentToken = text.substring(start, length)
+            val kind = currentToken.getKeywordKind()
+            val actualValue = kind.runCatching {
+                this as Boolean
+            }.getOrNull()
             return SyntaxToken(
-                specialTokens[currentToken] ?: SyntaxKind.Token.BadToken,
-                position++,
-                currentToken.toString(),
-                null
+                kind,
+                position,
+                currentToken,
+                actualValue ?: currentToken
             )
         }
 
+        return when (currentChar) {
+            '+' -> SyntaxToken(
+                SyntaxKind.Token.MathOperatorsToken.PlusToken,
+                position++,
+                "+",
+                "+"
+            )
+
+            '-' -> SyntaxToken(
+                SyntaxKind.Token.MathOperatorsToken.MinusToken,
+                position++,
+                "-",
+                "-"
+            )
 
 
-        diagnostics.add("error bad character in input : $currentChar")
-        return SyntaxToken(
-            SyntaxKind.Token.BadToken,
-            position++,
-            currentChar.toString(),
-            null
-        )
+            '*' -> SyntaxToken(
+                SyntaxKind.Token.MathOperatorsToken.MultiplyToken,
+                position++,
+                "*",
+                "*"
+            )
+
+            '/' -> SyntaxToken(
+                SyntaxKind.Token.MathOperatorsToken.SlashToken,
+                position++,
+                "/",
+                "/"
+            )
+
+            '(' -> SyntaxToken(
+                SyntaxKind.Token.OpenBracketToken,
+                position++,
+                "(",
+                "("
+            )
+
+
+            ')' -> SyntaxToken(
+                SyntaxKind.Token.CloseBracketToken,
+                position++,
+                ")",
+                ")"
+            )
+
+            '!' -> SyntaxToken(
+                SyntaxKind.Token.BooleanOperatorToken.NotToken,
+                position++,
+                "!",
+                "!"
+            )
+
+
+            '|' -> {
+                SyntaxToken(
+                    SyntaxKind.Token.BooleanOperatorToken.OrToken,
+                    position.also {
+                        position += 2
+                    },
+                    "!!",
+                    "!!"
+                )
+
+            }
+
+            '&' -> SyntaxToken(
+                SyntaxKind.Token.BooleanOperatorToken.AndToken,
+                position.also {
+                    position += 2
+                },
+                "&&",
+                "&&"
+            )
+
+
+            else -> {
+                diagnostics.add("error bad character in input : $currentChar")
+                SyntaxToken(
+                    SyntaxKind.Token.BadToken,
+                    position++,
+                    currentChar.toString(),
+                    currentChar
+                )
+            }
+        }
+
+
     }
 
 }
