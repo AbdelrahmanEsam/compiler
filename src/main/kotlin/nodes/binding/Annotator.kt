@@ -3,6 +3,7 @@ package com.moj.najiz.nodes.binding
 import com.moj.najiz.lexicalAnalyzer.SyntaxKind
 import com.moj.najiz.lexicalAnalyzer.SyntaxKind.*
 import com.moj.najiz.nodes.syntax.*
+import kotlin.reflect.typeOf
 
 class Annotator {
 
@@ -75,13 +76,21 @@ class Annotator {
     private fun annotateUnaryOperatorKind(
         operandKind: SyntaxKind,
         annotationKind: Any,
-    ): AnnotationUnaryOperatorKind? {
+    ): AnnotationUnaryOperator? {
 
 
         if (annotationKind is Int) {
             return when (operandKind) {
-                Token.MathOperatorsToken.PlusToken -> AnnotationUnaryOperatorKind.Identity
-                Token.MathOperatorsToken.MinusToken -> AnnotationUnaryOperatorKind.Negation
+                Token.MathOperatorsToken.PlusToken -> AnnotationUnaryOperator.annotate(
+                    syntaxKind = Token.MathOperatorsToken.PlusToken,
+                    operandKind = typeOf<Int>()
+                )
+
+                Token.MathOperatorsToken.MinusToken -> AnnotationUnaryOperator.annotate(
+                    syntaxKind = Token.MathOperatorsToken.MinusToken,
+                    operandKind = typeOf<Int>()
+                )
+
                 else -> throw Exception("unexpected token $operandKind")
 
             }
@@ -89,7 +98,10 @@ class Annotator {
 
         if (annotationKind is Boolean) {
             return when (operandKind) {
-                Token.BooleanOperatorToken.NotToken -> AnnotationUnaryOperatorKind.LogicalNegation
+                Token.BooleanOperatorToken.NotToken -> AnnotationUnaryOperator.annotate(
+                    syntaxKind = Token.BooleanOperatorToken.NotToken,
+                    operandKind = typeOf<Boolean>()
+                )
                 else -> throw Exception("unexpected token $operandKind")
             }
         }
@@ -100,22 +112,52 @@ class Annotator {
         operandKind: SyntaxKind,
         leftValue: Any,
         rightValue: Any
-    ): AnnotationBinaryOperatorKind? {
+    ): AnnotationBinaryOperator? {
 
         if (leftValue is Int || rightValue is Int) {
             return when (operandKind) {
-                Token.MathOperatorsToken.PlusToken -> AnnotationBinaryOperatorKind.Addition
-                Token.MathOperatorsToken.MinusToken -> AnnotationBinaryOperatorKind.Subtraction
-                Token.MathOperatorsToken.MultiplyToken -> AnnotationBinaryOperatorKind.Multiplication
-                Token.MathOperatorsToken.SlashToken -> AnnotationBinaryOperatorKind.Division
+                Token.MathOperatorsToken.PlusToken -> AnnotationBinaryOperator.annotate(
+                    syntaxKind = Token.MathOperatorsToken.PlusToken,
+                    leftType = Int,
+                    rightType = Int
+                )
+
+                Token.MathOperatorsToken.MinusToken -> AnnotationBinaryOperator.annotate(
+                    syntaxKind = Token.MathOperatorsToken.MinusToken,
+                    leftType = Int,
+                    rightType = Int
+                )
+
+                Token.MathOperatorsToken.MultiplyToken -> AnnotationBinaryOperator.annotate(
+                    syntaxKind = Token.MathOperatorsToken.MultiplyToken,
+                    leftType = Int,
+                    rightType = Int
+                )
+
+                Token.MathOperatorsToken.SlashToken -> AnnotationBinaryOperator.annotate(
+                    syntaxKind = Token.MathOperatorsToken.SlashToken,
+                    leftType = Int,
+                    rightType = Int
+                )
+
                 else -> throw Exception("unexpected token $operandKind")
             }
         }
 
         if (leftValue is Boolean || rightValue is Boolean) {
             return when (operandKind) {
-                Token.BooleanOperatorToken.AndToken -> AnnotationBinaryOperatorKind.LogicalAnd
-                Token.BooleanOperatorToken.OrToken -> AnnotationBinaryOperatorKind.LogicalOr
+                Token.BooleanOperatorToken.AndToken -> AnnotationBinaryOperator.annotate(
+                    syntaxKind = Token.BooleanOperatorToken.AndToken,
+                    leftType = Boolean,
+                    rightType = Boolean
+                )
+
+                Token.BooleanOperatorToken.OrToken -> AnnotationBinaryOperator.annotate(
+                    syntaxKind = Token.BooleanOperatorToken.OrToken,
+                    leftType = Boolean,
+                    rightType = Boolean
+                )
+
                 else -> throw Exception("unexpected token $operandKind")
             }
         }

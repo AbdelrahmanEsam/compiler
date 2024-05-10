@@ -1,7 +1,7 @@
 package com.moj.najiz.nodes.binding
 
 class AnnotationBinaryExpression(
-    private val _operatorKind: AnnotationBinaryOperatorKind,
+    private val _operatorKind: AnnotationBinaryOperator,
     private val _left: AnnotationExpression,
     private val _right: AnnotationExpression,
 ) : AnnotationExpression() {
@@ -9,7 +9,7 @@ class AnnotationBinaryExpression(
     override val annotationKind: AnnotationKind
         get() = AnnotationKind.AnnotationExpressionKind.BinaryExpression
 
-    val operandKind: AnnotationBinaryOperatorKind
+    val operand: AnnotationBinaryOperator
         get() = _operatorKind
 
     val rightExpression: AnnotationExpression

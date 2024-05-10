@@ -19,7 +19,7 @@ class Evaluator(private val root: AnnotationExpression) {
             val rightEvaluation = evaluateExpression(expression.rightExpression)
 
             if (leftEvaluation is Int && rightEvaluation is Int) {
-                return when (expression.operandKind) {
+                return when (expression.operand.annotationKind) {
                     AnnotationBinaryOperatorKind.Addition -> {
                         leftEvaluation + rightEvaluation
                     }
@@ -37,13 +37,13 @@ class Evaluator(private val root: AnnotationExpression) {
                     }
 
 
-                    else -> throw Exception("unExpected binary operator ${expression.operandKind}")
+                    else -> throw Exception("unExpected binary operator ${expression.operand}")
                 }
             }
 
 
             if (leftEvaluation is Boolean && rightEvaluation is Boolean) {
-                return when (expression.operandKind) {
+                return when (expression.operand.annotationKind) {
                     AnnotationBinaryOperatorKind.LogicalOr -> {
                         leftEvaluation || rightEvaluation
                     }
@@ -53,7 +53,7 @@ class Evaluator(private val root: AnnotationExpression) {
                     }
 
 
-                    else -> throw Exception("unExpected binary operator ${expression.operandKind}")
+                    else -> throw Exception("unExpected binary operator ${expression.operand}")
                 }
             }
 
@@ -61,7 +61,7 @@ class Evaluator(private val root: AnnotationExpression) {
 
         if (expression is AnnotationUnaryExpression) {
             val operand = evaluateExpression(expression.annotationExpression)
-            return when (expression.operandKind) {
+            return when (expression.operand.annotationKind) {
                 AnnotationUnaryOperatorKind.Identity -> {
                     operand as Int
                 }
@@ -75,7 +75,7 @@ class Evaluator(private val root: AnnotationExpression) {
                     !(operand as Boolean)
                 }
 
-                else -> throw Exception("unExpected unary  operator ${expression.operandKind}")
+                else -> throw Exception("unExpected unary  operator ${expression.operand}")
             }
         }
 
