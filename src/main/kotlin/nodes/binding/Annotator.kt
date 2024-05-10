@@ -53,7 +53,7 @@ class Annotator {
 
 
         val annotatedOperand = annotate(this.operandExpression)
-        val annotatedUnaryKind = annotateUnaryOperatorKind(this.operandExpression.kind, annotatedOperand.annotationKind)
+        val annotatedUnaryKind = annotateUnaryOperatorKind(this.operator.kind, annotatedOperand.value)
 
 
         annotatedUnaryKind?.let {
@@ -71,7 +71,7 @@ class Annotator {
         return annotatedOperand
     }
 
-    //todo fix issue here
+
     private fun annotateUnaryOperatorKind(
         operandKind: SyntaxKind,
         annotationKind: Any,
