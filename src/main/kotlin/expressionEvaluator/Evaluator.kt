@@ -1,6 +1,7 @@
 package com.moj.najiz.expressionEvaluator
 
 import com.moj.najiz.nodes.binding.*
+import com.moj.najiz.nodes.syntax.ParenthesizedExpressionSyntax
 
 class Evaluator(private val root: AnnotationExpression) {
 
@@ -19,11 +20,11 @@ class Evaluator(private val root: AnnotationExpression) {
             val rightEvaluation = evaluateExpression(expression.rightExpression)
 
 
-            if(expression.operand.annotationKind == AnnotationBinaryOperatorKind.Equality){
+            if (expression.operand.annotationKind == AnnotationBinaryOperatorKind.Equality) {
                 return leftEvaluation == rightEvaluation
             }
 
-            if(expression.operand.annotationKind == AnnotationBinaryOperatorKind.NotEquality){
+            if (expression.operand.annotationKind == AnnotationBinaryOperatorKind.NotEquality) {
                 return leftEvaluation != rightEvaluation
             }
 
@@ -68,7 +69,6 @@ class Evaluator(private val root: AnnotationExpression) {
             }
 
 
-
         }
 
         if (expression is AnnotationUnaryExpression) {
@@ -89,6 +89,10 @@ class Evaluator(private val root: AnnotationExpression) {
 
                 else -> throw Exception("unExpected unary  operator ${expression.operand}")
             }
+        }
+
+        if (expression is AnnotationParenthesizedExpression) {
+            return evaluateExpression(expression.coreExpression)
         }
 
         throw Exception("unExpected node operator kind ${expression.annotationKind}")

@@ -15,6 +15,7 @@ class Annotator {
             Expression.BinaryExpressionSyntax -> (expression as BinaryExpressionSyntax).annotateBinaryExpression()
             Expression.LiteralExpressionSyntax -> (expression as LiteralExpressionSyntax).annotateLiteralExpression()
             Expression.UnaryExpressionSyntax -> (expression as UnaryExpressionSyntax).annotateUnaryExpression()
+            Expression.ParenthesizedExpressionSyntax -> (expression as ParenthesizedExpressionSyntax).annotateParenthesizedExpression()
             else -> throw Exception("unexpected token ${expression.kind}")
         }
     }
@@ -70,6 +71,24 @@ class Annotator {
                     " isn't defined as ${this.operator.text} and ${annotatedOperand.value::class}"
         )
         return annotatedOperand
+    }
+
+
+    private fun ParenthesizedExpressionSyntax.annotateParenthesizedExpression(): AnnotationExpression {
+        val annotatedExpression = annotate(this.coreExpression)
+        annotatedExpression?.let {
+            return AnnotationParenthesizedExpression(
+                openToken = AnnotationParenthesizedOperatorKind.OpenBracket,
+                _coreExpression = annotatedExpression,
+                closeToken = AnnotationParenthesizedOperatorKind.CloseBracket,
+            )
+        }
+
+        diagnostics.add(
+            "parenthesized operator ${annotatedExpression.value}" +
+                    " isn't defined as ${this.kind} and ${annotatedExpression.value::class}"
+        )
+        return annotatedExpression
     }
 
 
@@ -190,5 +209,6 @@ class Annotator {
 
         return null
     }
+
 
 }
