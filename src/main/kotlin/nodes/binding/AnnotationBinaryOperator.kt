@@ -6,7 +6,8 @@ import kotlin.reflect.typeOf
 class AnnotationBinaryOperator(
     private val _syntaxKind: SyntaxKind,
     private val _annotationKind: AnnotationBinaryOperatorKind,
-    private val _operandKind: List<Any>? = null,
+    private val _operandKind: Any? = null,
+    private val _resultKind: Any,
     private val _type: List<Any>,
 ) {
 
@@ -17,40 +18,46 @@ class AnnotationBinaryOperator(
                 AnnotationBinaryOperator(
                     _syntaxKind = SyntaxKind.Token.MathOperatorsToken.PlusToken,
                     _annotationKind = AnnotationBinaryOperatorKind.Addition,
-                    _operandKind = listOf(typeOf<Int>()),
+                    _operandKind = typeOf<Int>(),
+                    _resultKind = typeOf<Int>(),
                     _type = listOf(Int),
                 ),
                 AnnotationBinaryOperator(
                     _syntaxKind = SyntaxKind.Token.MathOperatorsToken.MinusToken,
                     _annotationKind = AnnotationBinaryOperatorKind.Subtraction,
-                    _operandKind = listOf(typeOf<Int>()),
+                    _operandKind = typeOf<Int>(),
+                    _resultKind = typeOf<Int>(),
                     _type = listOf(Int),
                 ),
                 AnnotationBinaryOperator(
                     _syntaxKind = SyntaxKind.Token.MathOperatorsToken.SlashToken,
                     _annotationKind = AnnotationBinaryOperatorKind.Division,
-                    _operandKind = listOf(typeOf<Int>()),
+                    _operandKind = typeOf<Int>(),
+                    _resultKind = typeOf<Int>(),
                     _type = listOf(Int),
                 ),
 
                 AnnotationBinaryOperator(
                     _syntaxKind = SyntaxKind.Token.MathOperatorsToken.MultiplyToken,
                     _annotationKind = AnnotationBinaryOperatorKind.Multiplication,
-                    _operandKind = listOf(typeOf<Int>()),
+                    _operandKind = typeOf<Int>(),
+                    _resultKind = typeOf<Int>(),
                     _type = listOf(Int),
                 ),
 
                 AnnotationBinaryOperator(
                     _syntaxKind = SyntaxKind.Token.EqualityToken,
                     _annotationKind = AnnotationBinaryOperatorKind.Equality,
-                    _operandKind = listOf(typeOf<Int>(), typeOf<Boolean>()),
+                    _operandKind = typeOf<Int>(),
+                    _resultKind = true,
                     _type = listOf(Int, Boolean),
                 ),
 
                 AnnotationBinaryOperator(
                     _syntaxKind = SyntaxKind.Token.NotEqualityToken,
                     _annotationKind = AnnotationBinaryOperatorKind.NotEquality,
-                    _operandKind = listOf(typeOf<Int>(), typeOf<Boolean>()),
+                    _operandKind = typeOf<Int>(),
+                    _resultKind = true,
                     _type = listOf(Int, Boolean),
                 ),
 
@@ -58,14 +65,16 @@ class AnnotationBinaryOperator(
                 AnnotationBinaryOperator(
                     _syntaxKind = SyntaxKind.Token.BooleanOperatorToken.OrToken,
                     _annotationKind = AnnotationBinaryOperatorKind.LogicalOr,
-                    _operandKind = listOf(typeOf<Boolean>()),
+                    _operandKind = typeOf<Boolean>(),
+                    _resultKind = typeOf<Boolean>(),
                     _type = listOf(Boolean),
                 ),
 
                 AnnotationBinaryOperator(
                     _syntaxKind = SyntaxKind.Token.BooleanOperatorToken.AndToken,
                     _annotationKind = AnnotationBinaryOperatorKind.LogicalAnd,
-                    _operandKind = listOf(typeOf<Boolean>()),
+                    _operandKind = typeOf<Boolean>(),
+                    _resultKind = typeOf<Boolean>(),
                     _type = listOf(Boolean),
                 ),
             )
@@ -90,6 +99,9 @@ class AnnotationBinaryOperator(
 
     val operandKind: Any?
         get() = _operandKind
+
+    val resultKind: Any
+        get() = _resultKind
 
     val type: Any
         get() = _type
