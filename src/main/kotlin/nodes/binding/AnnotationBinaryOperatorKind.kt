@@ -7,4 +7,6 @@ interface AnnotationBinaryOperatorKind {
     data object Multiplication : AnnotationBinaryOperatorKind
     data object LogicalAnd : AnnotationBinaryOperatorKind
     data object LogicalOr : AnnotationBinaryOperatorKind
+    data object Equality : AnnotationBinaryOperatorKind
+    data object NotEquality : AnnotationBinaryOperatorKind
 }

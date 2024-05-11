@@ -122,7 +122,16 @@ class LexicalAnalyzer(private val text: String) {
                 ")"
             )
 
-            '!' -> SyntaxToken(
+            '!' -> return if (text[position + 1] == '=')
+                SyntaxToken(
+                    SyntaxKind.Token.NotEqualityToken,
+                    position.also {
+                        position += 2
+                    },
+                    "!=",
+                    "!="
+                )
+            else SyntaxToken(
                 SyntaxKind.Token.BooleanOperatorToken.NotToken,
                 position++,
                 "!",
@@ -149,6 +158,16 @@ class LexicalAnalyzer(private val text: String) {
                 },
                 "&&",
                 "&&"
+            )
+
+
+            '=' -> SyntaxToken(
+                SyntaxKind.Token.EqualityToken,
+                position.also {
+                    position += 2
+                },
+                "==",
+                "=="
             )
 
 

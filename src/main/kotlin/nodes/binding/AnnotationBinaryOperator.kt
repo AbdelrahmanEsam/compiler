@@ -6,8 +6,8 @@ import kotlin.reflect.typeOf
 class AnnotationBinaryOperator(
     private val _syntaxKind: SyntaxKind,
     private val _annotationKind: AnnotationBinaryOperatorKind,
-    private val _operandKind: Any? = null,
-    private val _type: Any,
+    private val _operandKind: List<Any>? = null,
+    private val _type: List<Any>,
 ) {
 
 
@@ -17,41 +17,56 @@ class AnnotationBinaryOperator(
                 AnnotationBinaryOperator(
                     _syntaxKind = SyntaxKind.Token.MathOperatorsToken.PlusToken,
                     _annotationKind = AnnotationBinaryOperatorKind.Addition,
-                    _operandKind = typeOf<Int>(),
-                    _type = Int,
+                    _operandKind = listOf(typeOf<Int>()),
+                    _type = listOf(Int),
                 ),
                 AnnotationBinaryOperator(
                     _syntaxKind = SyntaxKind.Token.MathOperatorsToken.MinusToken,
                     _annotationKind = AnnotationBinaryOperatorKind.Subtraction,
-                    _operandKind = typeOf<Int>(),
-                    _type = Int,
+                    _operandKind = listOf(typeOf<Int>()),
+                    _type = listOf(Int),
                 ),
                 AnnotationBinaryOperator(
                     _syntaxKind = SyntaxKind.Token.MathOperatorsToken.SlashToken,
                     _annotationKind = AnnotationBinaryOperatorKind.Division,
-                    _operandKind = typeOf<Int>(),
-                    _type = Int,
+                    _operandKind = listOf(typeOf<Int>()),
+                    _type = listOf(Int),
                 ),
 
                 AnnotationBinaryOperator(
                     _syntaxKind = SyntaxKind.Token.MathOperatorsToken.MultiplyToken,
                     _annotationKind = AnnotationBinaryOperatorKind.Multiplication,
-                    _operandKind = typeOf<Int>(),
-                    _type = Int,
+                    _operandKind = listOf(typeOf<Int>()),
+                    _type = listOf(Int),
                 ),
+
+                AnnotationBinaryOperator(
+                    _syntaxKind = SyntaxKind.Token.EqualityToken,
+                    _annotationKind = AnnotationBinaryOperatorKind.Equality,
+                    _operandKind = listOf(typeOf<Int>(), typeOf<Boolean>()),
+                    _type = listOf(Int, Boolean),
+                ),
+
+                AnnotationBinaryOperator(
+                    _syntaxKind = SyntaxKind.Token.NotEqualityToken,
+                    _annotationKind = AnnotationBinaryOperatorKind.NotEquality,
+                    _operandKind = listOf(typeOf<Int>(), typeOf<Boolean>()),
+                    _type = listOf(Int, Boolean),
+                ),
+
 
                 AnnotationBinaryOperator(
                     _syntaxKind = SyntaxKind.Token.BooleanOperatorToken.OrToken,
                     _annotationKind = AnnotationBinaryOperatorKind.LogicalOr,
-                    _operandKind = typeOf<Boolean>(),
-                    _type = Boolean,
+                    _operandKind = listOf(typeOf<Boolean>()),
+                    _type = listOf(Boolean),
                 ),
 
                 AnnotationBinaryOperator(
                     _syntaxKind = SyntaxKind.Token.BooleanOperatorToken.AndToken,
                     _annotationKind = AnnotationBinaryOperatorKind.LogicalAnd,
-                    _operandKind = typeOf<Boolean>(),
-                    _type = Boolean,
+                    _operandKind = listOf(typeOf<Boolean>()),
+                    _type = listOf(Boolean),
                 ),
             )
 
@@ -59,7 +74,7 @@ class AnnotationBinaryOperator(
 
             binaryOperators.forEach { operand ->
                 if (operand._syntaxKind == syntaxKind &&
-                    operand._type == leftType && operand._type == rightType
+                    leftType in operand._type && rightType in operand._type
                 ) {
                     return operand
                 }

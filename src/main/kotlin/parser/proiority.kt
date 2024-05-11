@@ -5,8 +5,9 @@ import com.moj.najiz.lexicalAnalyzer.SyntaxKind.Token.*
 
 fun SyntaxKind.getBinaryPriority(): Int {
     return when (this) {
-        MathOperatorsToken.PlusToken, MathOperatorsToken.MinusToken -> 4
-        MathOperatorsToken.MultiplyToken, MathOperatorsToken.SlashToken -> 3
+        MathOperatorsToken.PlusToken, MathOperatorsToken.MinusToken -> 5
+        MathOperatorsToken.MultiplyToken, MathOperatorsToken.SlashToken -> 4
+        EqualityToken, NotEqualityToken -> 3
         BooleanOperatorToken.AndToken -> 2
         BooleanOperatorToken.OrToken -> 1
         else -> 0
@@ -15,8 +16,8 @@ fun SyntaxKind.getBinaryPriority(): Int {
 
 fun SyntaxKind.getUnaryPriority(): Int {
     return when (this) {
-        MathOperatorsToken.PlusToken, MathOperatorsToken.MinusToken -> 5
-        BooleanOperatorToken.NotToken -> 5
+        MathOperatorsToken.PlusToken, MathOperatorsToken.MinusToken -> 6
+        BooleanOperatorToken.NotToken -> 6
         else -> 0
     }
 }

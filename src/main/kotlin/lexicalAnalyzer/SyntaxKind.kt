@@ -4,6 +4,10 @@ package com.moj.najiz.lexicalAnalyzer
 sealed interface SyntaxKind {
 
     sealed interface Token : SyntaxKind {
+
+        data object EqualityToken : Token
+        data object NotEqualityToken : Token
+
         //mathematical
         sealed interface MathOperatorsToken : SyntaxKind {
             data object PlusToken : MathOperatorsToken

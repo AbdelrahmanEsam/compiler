@@ -18,6 +18,16 @@ class Evaluator(private val root: AnnotationExpression) {
             val leftEvaluation = evaluateExpression(expression.leftExpression)
             val rightEvaluation = evaluateExpression(expression.rightExpression)
 
+
+            if(expression.operand.annotationKind == AnnotationBinaryOperatorKind.Equality){
+                return leftEvaluation == rightEvaluation
+            }
+
+            if(expression.operand.annotationKind == AnnotationBinaryOperatorKind.NotEquality){
+                return leftEvaluation != rightEvaluation
+            }
+
+
             if (leftEvaluation is Int && rightEvaluation is Int) {
                 return when (expression.operand.annotationKind) {
                     AnnotationBinaryOperatorKind.Addition -> {
@@ -56,6 +66,8 @@ class Evaluator(private val root: AnnotationExpression) {
                     else -> throw Exception("unExpected binary operator ${expression.operand}")
                 }
             }
+
+
 
         }
 

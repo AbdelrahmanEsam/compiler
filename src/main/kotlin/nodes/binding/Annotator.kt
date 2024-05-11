@@ -102,6 +102,7 @@ class Annotator {
                     syntaxKind = Token.BooleanOperatorToken.NotToken,
                     operandKind = typeOf<Boolean>()
                 )
+
                 else -> throw Exception("unexpected token $operandKind")
             }
         }
@@ -113,6 +114,7 @@ class Annotator {
         leftValue: Any,
         rightValue: Any
     ): AnnotationBinaryOperator? {
+
 
         if (leftValue is Int || rightValue is Int) {
             return when (operandKind) {
@@ -140,6 +142,18 @@ class Annotator {
                     rightType = Int
                 )
 
+                Token.EqualityToken -> AnnotationBinaryOperator.annotate(
+                    syntaxKind = Token.EqualityToken,
+                    leftType = Int,
+                    rightType = Int,
+                )
+
+                Token.NotEqualityToken -> AnnotationBinaryOperator.annotate(
+                    syntaxKind = Token.NotEqualityToken,
+                    leftType = Int,
+                    rightType = Int,
+                )
+
                 else -> throw Exception("unexpected token $operandKind")
             }
         }
@@ -154,6 +168,18 @@ class Annotator {
 
                 Token.BooleanOperatorToken.OrToken -> AnnotationBinaryOperator.annotate(
                     syntaxKind = Token.BooleanOperatorToken.OrToken,
+                    leftType = Boolean,
+                    rightType = Boolean
+                )
+
+                Token.EqualityToken -> AnnotationBinaryOperator.annotate(
+                    syntaxKind = Token.EqualityToken,
+                    leftType = Boolean,
+                    rightType = Boolean
+                )
+
+                Token.NotEqualityToken -> AnnotationBinaryOperator.annotate(
+                    syntaxKind = Token.NotEqualityToken,
                     leftType = Boolean,
                     rightType = Boolean
                 )
