@@ -1,7 +1,5 @@
 package com.moj.najiz.nodes.binding
 
-import com.moj.najiz.nodes.syntax.ExpressionSyntax
-
 class AnnotationParenthesizedExpression(
     private val openToken: AnnotationParenthesizedOperatorKind,
     private val _coreExpression: AnnotationExpression,
