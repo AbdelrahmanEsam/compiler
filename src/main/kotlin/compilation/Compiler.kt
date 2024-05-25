@@ -1,0 +1,26 @@
+package com.moj.najiz.compilation
+
+import com.moj.najiz.diagnostics.Diagnostic
+import com.moj.najiz.diagnostics.plus
+import com.moj.najiz.expressionEvaluator.EvaluationResult
+import com.moj.najiz.expressionEvaluator.Evaluator
+import com.moj.najiz.nodes.binding.Annotator
+import com.moj.najiz.nodes.syntax.SyntaxTree
+
+class Compiler(private val _syntaxTree: SyntaxTree) {
+    private val syntaxTree: SyntaxTree
+        get() = _syntaxTree
+
+
+    fun evaluate(annotator: Annotator, evaluator: Evaluator): EvaluationResult {
+
+        val annotatedResult = annotator.annotate(syntaxTree.root)
+        val evaluatorDiagnostics: Diagnostic.DiagnosticsBag = syntaxTree.diagnosticsBag + annotator.diagnostics
+        if (evaluatorDiagnostics.distinct().isNotEmpty()) return EvaluationResult(evaluatorDiagnostics, null)
+
+        val evaluatedResult = evaluator.evaluateExpression(annotatedResult)
+        return EvaluationResult(Diagnostic.DiagnosticsBag(), evaluatedResult)
+
+    }
+
+}

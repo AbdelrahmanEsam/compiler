@@ -1,7 +1,10 @@
 package com.moj.najiz.lexicalAnalyzer
 
+import com.moj.najiz.diagnostics.Diagnostic
+import com.moj.najiz.diagnostics.TextSpan
 import com.moj.najiz.nodes.syntax.SyntaxToken
 import com.moj.najiz.nodes.syntax.getKeywordKind
+import kotlin.reflect.typeOf
 
 class LexicalAnalyzer(private val text: String) {
 
@@ -13,7 +16,7 @@ class LexicalAnalyzer(private val text: String) {
             return if (position >= text.length) null else text[position]
         }
 
-    private val diagnostics: MutableList<String> = mutableListOf()
+    private val diagnostics: Diagnostic.DiagnosticsBag = Diagnostic.DiagnosticsBag()
 
     private fun next() {
         position++
@@ -39,6 +42,15 @@ class LexicalAnalyzer(private val text: String) {
             val actualValue = currentToken.runCatching {
                 this.toInt()
             }.getOrNull()
+            if (actualValue == null) {
+                diagnostics.reportInvalidInt(
+                    textSpan = TextSpan(_start = start, _length = length),
+                    text = text,
+                    type = typeOf<Int>()
+
+                )
+
+            }
             return SyntaxToken(
                 SyntaxKind.Expression.LiteralExpressionSyntax,
                 position,
@@ -172,7 +184,7 @@ class LexicalAnalyzer(private val text: String) {
 
 
             else -> {
-                diagnostics.add("error bad character in input : $currentChar")
+                diagnostics.reportBadCharacter(position = position,char = "currentChar")
                 SyntaxToken(
                     SyntaxKind.Token.BadToken,
                     position++,

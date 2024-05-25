@@ -1,5 +1,6 @@
 package com.moj.najiz.parser
 
+import com.moj.najiz.diagnostics.Diagnostic
 import com.moj.najiz.lexicalAnalyzer.LexicalAnalyzer
 import com.moj.najiz.lexicalAnalyzer.SyntaxKind
 import com.moj.najiz.nodes.syntax.*
@@ -11,7 +12,7 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
     private val current: SyntaxToken
         get() = peek(0)
 
-    private val diagnostics: MutableList<String> = mutableListOf()
+    private val diagnostics: Diagnostic.DiagnosticsBag = Diagnostic.DiagnosticsBag()
 
     private fun getTokens() {
 
@@ -38,7 +39,7 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
     private fun match(kind: SyntaxKind): SyntaxToken {
         return if (current.kind == kind) nextToken() else {
 
-            diagnostics.add("error unexpected token ${current.kind} expected $kind")
+            diagnostics.reportUnExpectedError(current.textSpan, "error unexpected token ${current.kind} expected $kind")
             SyntaxToken(
                 kind = kind,
                 position = current.position,

@@ -1,5 +1,6 @@
 package com.moj.najiz
 
+import com.moj.najiz.compilation.Compiler
 import com.moj.najiz.expressionEvaluator.Evaluator
 import com.moj.najiz.lexicalAnalyzer.LexicalAnalyzer
 import com.moj.najiz.nodes.binding.Annotator
@@ -15,16 +16,20 @@ fun main() {
         val parser = Parser(lexicalAnalyzer)
         val syntaxTree = parser.parse()
         printTree(syntaxTree.root)
-        if (syntaxTree.diagnostics.isNotEmpty()) {
-            syntaxTree.diagnostics.forEach {
-                println(it)
+        if (syntaxTree.diagnosticsBag.diagnostics.isNotEmpty()) {
+            syntaxTree.diagnosticsBag.forEach {
+                println(it.message)
             }
         } else {
-            val annotator = Annotator()
-            val annotatedRoot = annotator.annotate(syntaxTree.root)
-            val evaluator = Evaluator(annotatedRoot)
-            val evaluationResult = evaluator.getEvaluator()
-            println(evaluationResult)
+            val compiler = Compiler(syntaxTree)
+            val evaluationResult = compiler.evaluate(Annotator(), Evaluator())
+            if (evaluationResult.diagnostics.diagnostics.isNotEmpty()) {
+                evaluationResult.diagnostics.diagnostics.forEach {
+                    println(it.message)
+                }
+                return
+            }
+            println(evaluationResult.value)
         }
 
     }

@@ -1,16 +1,11 @@
 package com.moj.najiz.expressionEvaluator
 
 import com.moj.najiz.nodes.binding.*
-import com.moj.najiz.nodes.syntax.ParenthesizedExpressionSyntax
 
-class Evaluator(private val root: AnnotationExpression) {
-
-    fun getEvaluator(): Any {
-        return evaluateExpression(root)
-    }
+class Evaluator {
 
 
-    private fun evaluateExpression(expression: AnnotationExpression): Any {
+    fun evaluateExpression(expression: AnnotationExpression): Any {
         if (expression is AnnotationLiteralExpression) {
             return expression.value
         }

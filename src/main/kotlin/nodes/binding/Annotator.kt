@@ -1,5 +1,7 @@
 package com.moj.najiz.nodes.binding
 
+import com.moj.najiz.diagnostics.Diagnostic
+import com.moj.najiz.diagnostics.TextSpan
 import com.moj.najiz.lexicalAnalyzer.SyntaxKind
 import com.moj.najiz.lexicalAnalyzer.SyntaxKind.*
 import com.moj.najiz.nodes.syntax.*
@@ -7,7 +9,9 @@ import kotlin.reflect.typeOf
 
 class Annotator {
 
-    private val diagnostics: MutableList<String> = mutableListOf()
+    private val _diagnostics: Diagnostic.DiagnosticsBag = Diagnostic.DiagnosticsBag()
+    val diagnostics: Diagnostic.DiagnosticsBag
+        get() = _diagnostics
 
 
     fun annotate(expression: ExpressionSyntax): AnnotationExpression {
@@ -39,10 +43,14 @@ class Annotator {
 
         }
 
-        diagnostics.add(
-            "binary operator ${operator.actualValue}" +
-                    " isn't defined as ${operator.text} and ${rightAnnotatedExpression.value::class}"
+        _diagnostics.reportUndefinedBinaryOperator(
+            operator.textSpan,
+            operator.text,
+            leftAnnotatedExpression.value::class,
+            rightAnnotatedExpression.value::class
         )
+
+
         return leftAnnotatedExpression
     }
 
@@ -66,10 +74,7 @@ class Annotator {
         }
 
 
-        diagnostics.add(
-            "binary operator ${operator.actualValue}" +
-                    " isn't defined as ${this.operator.text} and ${annotatedOperand.value::class}"
-        )
+        _diagnostics.reportUndefinedUnaryOperator(operator.textSpan, operator.text, annotatedOperand.value::class)
         return annotatedOperand
     }
 
@@ -84,10 +89,15 @@ class Annotator {
             )
         }
 
-        diagnostics.add(
-            "parenthesized operator ${annotatedExpression.value}" +
-                    " isn't defined as ${this.kind} and ${annotatedExpression.value::class}"
-        )
+//        _diagnostics.reportUndefinedParenthesizedOperator(
+//            coreExpression ,
+//            annotatedExpression.value, kind, annotatedExpression.value::class
+//        )
+//
+//        _diagnostics.add(
+//            "parenthesized operator ${annotatedExpression.value}" +
+//                    " isn't defined as ${this.kind} and ${annotatedExpression.value::class}"
+//        )
         return annotatedExpression
     }
 
