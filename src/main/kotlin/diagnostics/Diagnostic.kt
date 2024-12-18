@@ -35,6 +35,12 @@ class Diagnostic(private val _textSpan: TextSpan, private val _message: String) 
 
         }
 
+        fun reportInvalidDouble(textSpan: TextSpan, text: String, type: KType) {
+            val message = "the number $text isn't valid type"
+            report(span = textSpan, message)
+
+        }
+
         fun reportBadCharacter(position: Int, char: String) {
             val message = "error bad character in input : $char"
             report(span = TextSpan(_start = position, _length = 1), message = message)

@@ -4,6 +4,7 @@ import com.moj.najiz.diagnostics.Diagnostic
 import com.moj.najiz.diagnostics.TextSpan
 import com.moj.najiz.nodes.syntax.SyntaxToken
 import com.moj.najiz.nodes.syntax.getKeywordKind
+import com.moj.najiz.nodes.syntax.toBoolean
 import kotlin.reflect.typeOf
 
 class LexicalAnalyzer(private val text: String) {
@@ -24,71 +25,114 @@ class LexicalAnalyzer(private val text: String) {
 
     fun lex(): SyntaxToken {
 
-        if (position >= text.length) {
+        val spaceToken = spaceToken()
+        spaceToken?.let {
+            return spaceToken
+        }
+
+        val isDigit = isDigit()
+        isDigit?.let {
+            return isDigit
+        }
+
+
+        val isWeightSpace = isWeightSpace()
+        isWeightSpace?.let {
+            return isWeightSpace
+        }
+
+        val isLetter = isLetter()
+        isLetter?.let {
+            return isLetter
+        }
+
+        return isSpecialChar()
+
+    }
+
+
+    private fun spaceToken(): SyntaxToken? {
+        return if (position >= text.length) {
             return SyntaxToken(
                 SyntaxKind.Token.EndOfFileToken,
                 position,
                 "\u0000",
                 "\u0000"
             )
-        }
+        } else null
+    }
 
-        if (currentChar?.isDigit() == true) {
+    private fun isDigit(): SyntaxToken? {
+        return if (currentChar?.isDigit() == true) {
             val start = position
-            while (currentChar?.isDigit() == true)
+            while (currentChar?.isDigit() == true || currentChar == '.')
                 next()
             val length = position
             val currentToken = text.substring(start, length)
             val actualValue = currentToken.runCatching {
+                if (currentToken.contains(".")) {
+                    return@runCatching this.toDouble()
+                }
                 this.toInt()
             }.getOrNull()
             if (actualValue == null) {
+                if (currentToken.contains(".")) {
+                    diagnostics.reportInvalidDouble(
+                        textSpan = TextSpan(_start = start, _length = length),
+                        text = text,
+                        type = typeOf<Double>()
+                    )
+                }
                 diagnostics.reportInvalidInt(
                     textSpan = TextSpan(_start = start, _length = length),
                     text = text,
                     type = typeOf<Int>()
-
                 )
-
             }
-            return SyntaxToken(
+            SyntaxToken(
                 SyntaxKind.Expression.LiteralExpressionSyntax,
                 position,
                 currentToken,
                 actualValue
             )
-        }
+        } else null
+    }
 
-        if (currentChar?.isWhitespace() == true) {
+    private fun isWeightSpace(): SyntaxToken? {
+        return if (currentChar?.isWhitespace() == true) {
             val start = position
             while (currentChar?.isWhitespace() == true) next()
             val length = position
             val currentToken = text.substring(start, length)
-            return SyntaxToken(
+            SyntaxToken(
                 SyntaxKind.Token.WhiteSpaceToken,
                 position,
                 currentToken,
                 "space"
             )
-        }
+        } else null
+    }
 
-        if (currentChar?.isLetter() == true) {
+    private fun isLetter(): SyntaxToken? {
+        return if (currentChar?.isLetter() == true) {
             val start = position
             while (currentChar?.isLetter() == true) next()
             val length = position
             val currentToken = text.substring(start, length)
             val kind = currentToken.getKeywordKind()
-            val actualValue = kind.runCatching {
-                this as Boolean
-            }.getOrNull()
-            return SyntaxToken(
+            val actualValue = if (kind != SyntaxKind.Token.IdentifierToken) {
+                currentToken.toBoolean()
+            } else null
+            SyntaxToken(
                 kind,
                 position,
                 currentToken,
                 actualValue ?: currentToken
             )
-        }
+        } else null
+    }
 
+    private fun isSpecialChar(): SyntaxToken {
         return when (currentChar) {
             '+' -> SyntaxToken(
                 SyntaxKind.Token.MathOperatorsToken.PlusToken,
@@ -120,7 +164,7 @@ class LexicalAnalyzer(private val text: String) {
             )
 
             '(' -> SyntaxToken(
-                SyntaxKind.Token.OpenBracketToken,
+                SyntaxKind.Token.BracketsToken.OpenBracketToken,
                 position++,
                 "(",
                 "("
@@ -128,7 +172,7 @@ class LexicalAnalyzer(private val text: String) {
 
 
             ')' -> SyntaxToken(
-                SyntaxKind.Token.CloseBracketToken,
+                SyntaxKind.Token.BracketsToken.CloseBracketToken,
                 position++,
                 ")",
                 ")"
@@ -184,7 +228,7 @@ class LexicalAnalyzer(private val text: String) {
 
 
             else -> {
-                diagnostics.reportBadCharacter(position = position,char = "currentChar")
+                diagnostics.reportBadCharacter(position = position, char = "currentChar")
                 SyntaxToken(
                     SyntaxKind.Token.BadToken,
                     position++,
@@ -193,8 +237,7 @@ class LexicalAnalyzer(private val text: String) {
                 )
             }
         }
-
-
     }
+
 
 }

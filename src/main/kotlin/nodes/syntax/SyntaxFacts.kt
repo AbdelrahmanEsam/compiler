@@ -4,7 +4,7 @@ import com.moj.najiz.lexicalAnalyzer.SyntaxKind
 
 
 fun String.getKeywordKind(): SyntaxKind {
-    return when (this) {
+    return when (this.lowercase()) {
         "true" -> SyntaxKind.Token.BooleanToken.TrueToken
         "false" -> SyntaxKind.Token.BooleanToken.FalseToken
 
@@ -13,3 +13,5 @@ fun String.getKeywordKind(): SyntaxKind {
         }
     }
 }
+
+fun String.toBoolean() = equals("true", ignoreCase = true)

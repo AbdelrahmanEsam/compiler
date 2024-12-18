@@ -12,7 +12,7 @@ sealed interface SyntaxKind {
         sealed interface MathOperatorsToken : SyntaxKind {
             data object PlusToken : MathOperatorsToken
             data object MinusToken : MathOperatorsToken
-            data object MultiplyToken :MathOperatorsToken
+            data object MultiplyToken : MathOperatorsToken
             data object SlashToken : MathOperatorsToken
         }
 
@@ -28,10 +28,12 @@ sealed interface SyntaxKind {
             data object NotToken : BooleanOperatorToken
         }
 
+        sealed interface BracketsToken : SyntaxKind {
+            //brackets
+            data object OpenBracketToken : Token
+            data object CloseBracketToken : Token
+        }
 
-        //brackets
-        data object OpenBracketToken : Token
-        data object CloseBracketToken : Token
 
         //special
         data object WhiteSpaceToken : Token

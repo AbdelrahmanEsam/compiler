@@ -81,13 +81,12 @@ class Annotator {
 
     private fun ParenthesizedExpressionSyntax.annotateParenthesizedExpression(): AnnotationExpression {
         val annotatedExpression = annotate(this.coreExpression)
-        annotatedExpression?.let {
-            return AnnotationParenthesizedExpression(
-                openToken = AnnotationParenthesizedOperatorKind.OpenBracket,
-                _coreExpression = annotatedExpression,
-                closeToken = AnnotationParenthesizedOperatorKind.CloseBracket,
-            )
-        }
+        return AnnotationParenthesizedExpression(
+            openToken = AnnotationParenthesizedOperatorKind.OpenBracket,
+            _coreExpression = annotatedExpression,
+            closeToken = AnnotationParenthesizedOperatorKind.CloseBracket,
+        )
+
 
 //        _diagnostics.reportUndefinedParenthesizedOperator(
 //            coreExpression ,

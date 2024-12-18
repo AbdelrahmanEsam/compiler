@@ -15,7 +15,6 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
     private val diagnostics: Diagnostic.DiagnosticsBag = Diagnostic.DiagnosticsBag()
 
     private fun getTokens() {
-
         do {
             val token = lexicalAnalyzer.lex()
             if (token.kind != SyntaxKind.Token.BadToken && token.kind != SyntaxKind.Token.WhiteSpaceToken) tokens.add(
@@ -82,10 +81,10 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
 
     private fun parsePrimaryExpression(): ExpressionSyntax {
         when (current.kind) {
-            SyntaxKind.Token.OpenBracketToken -> {
+            SyntaxKind.Token.BracketsToken.OpenBracketToken -> {
                 val left = nextToken()
                 val expression = parseExpression()
-                val right = match(SyntaxKind.Token.CloseBracketToken)
+                val right = match(SyntaxKind.Token.BracketsToken.CloseBracketToken)
                 val parenthesizedExpressionSyntax = ParenthesizedExpressionSyntax(left, expression, right)
                 return parenthesizedExpressionSyntax
             }
