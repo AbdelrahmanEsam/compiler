@@ -1,12 +1,12 @@
 package com.moj.najiz
 
-import com.moj.najiz.compilation.Compiler
-import com.moj.najiz.expressionEvaluator.Evaluator
-import com.moj.najiz.lexicalAnalyzer.LexicalAnalyzer
-import com.moj.najiz.nodes.binding.Annotator
-import com.moj.najiz.parser.Parser
-import com.moj.najiz.nodes.syntax.SyntaxNode
-import com.moj.najiz.nodes.syntax.SyntaxToken
+import com.moj.najiz.frontend.compilation.Compiler
+import com.moj.najiz.frontend.expressionEvaluator.Evaluator
+import com.moj.najiz.frontend.lexicalAnalyzer.LexicalAnalyzer
+import com.moj.najiz.frontend.nodes.binding.Annotator
+import com.moj.najiz.frontend.parser.Parser
+import com.moj.najiz.frontend.nodes.syntax.SyntaxNode
+import com.moj.najiz.frontend.nodes.syntax.SyntaxToken
 
 fun main() {
 

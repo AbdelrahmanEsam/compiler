@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
 }
 
-group = "com.moj.najiz"
+group = "com.moj.najiz.frontend"
 version = "1.0-SNAPSHOT"
 
 repositories {
