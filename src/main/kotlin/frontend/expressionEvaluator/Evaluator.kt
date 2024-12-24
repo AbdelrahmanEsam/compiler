@@ -70,8 +70,6 @@ class Evaluator {
     }
 
 
-
-
     fun evaluate(expression: AnnotationUnaryExpression): Any {
         val operand = expression.annotationExpression.evaluate(this)
         return when (expression.operand.annotationKind) {
