@@ -1,5 +1,7 @@
 package com.moj.najiz.frontend.nodes.binding
 
+import com.moj.najiz.frontend.expressionEvaluator.Evaluator
+
 class AnnotationParenthesizedExpression(
     private val openToken: AnnotationParenthesizedOperatorKind,
     private val _coreExpression: AnnotationExpression,
@@ -10,6 +12,10 @@ class AnnotationParenthesizedExpression(
 
     override val value: Any
         get() = _coreExpression.value
+
+    override fun evaluate(evaluator: Evaluator): Any {
+        return evaluator.evaluate(this)
+    }
 
     val coreExpression: AnnotationExpression
         get() {

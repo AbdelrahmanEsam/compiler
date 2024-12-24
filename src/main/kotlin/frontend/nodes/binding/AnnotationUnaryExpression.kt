@@ -1,5 +1,7 @@
 package com.moj.najiz.frontend.nodes.binding
 
+import com.moj.najiz.frontend.expressionEvaluator.Evaluator
+
 class AnnotationUnaryExpression(
     private val _operatorKind: AnnotationUnaryOperator,
     private val _annotationExpression: AnnotationExpression,
@@ -17,4 +19,8 @@ class AnnotationUnaryExpression(
 
     override val value: Any
         get() = _operatorKind
+
+    override fun evaluate(evaluator: Evaluator): Any {
+        return evaluator.evaluate(this)
+    }
 }

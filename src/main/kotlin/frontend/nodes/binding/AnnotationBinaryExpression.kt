@@ -1,5 +1,7 @@
 package com.moj.najiz.frontend.nodes.binding
 
+import com.moj.najiz.frontend.expressionEvaluator.Evaluator
+
 class AnnotationBinaryExpression(
     private val _operatorKind: AnnotationBinaryOperator,
     private val _left: AnnotationExpression,
@@ -20,5 +22,9 @@ class AnnotationBinaryExpression(
 
     override val value: Any
         get() = _left.value
+
+    override fun evaluate(evaluator: Evaluator): Any {
+        return evaluator.evaluate(this)
+    }
 
 }
