@@ -14,7 +14,7 @@ class Compiler(private val _syntaxTree: SyntaxTree) {
 
     fun evaluate(annotator: Annotator, evaluator: Evaluator): EvaluationResult {
 
-        val annotatedResult = annotator.annotate(syntaxTree.root)
+        val annotatedResult = syntaxTree.root.annotate(annotator)
         val evaluatorDiagnostics: Diagnostic.DiagnosticsBag = syntaxTree.diagnosticsBag + annotator.diagnostics
         if (evaluatorDiagnostics.distinct().isNotEmpty()) return EvaluationResult(evaluatorDiagnostics, null)
 

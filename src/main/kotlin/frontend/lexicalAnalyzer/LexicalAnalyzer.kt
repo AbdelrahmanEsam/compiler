@@ -63,7 +63,7 @@ class LexicalAnalyzer(private val text: String) {
     }
 
     private fun isDigit(): SyntaxToken? {
-        return if (currentChar?.isDigit() == true) {
+        return if (currentChar?.isDigit() == true || (currentChar == '.' && text[position+1].isDigit())) {
             val start = position
             while (currentChar?.isDigit() == true || currentChar == '.')
                 next()
@@ -201,10 +201,9 @@ class LexicalAnalyzer(private val text: String) {
                     position.also {
                         position += 2
                     },
-                    "!!",
-                    "!!"
+                    "||",
+                    "||"
                 )
-
             }
 
             '&' -> SyntaxToken(

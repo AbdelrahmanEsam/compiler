@@ -17,9 +17,11 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
     private fun getTokens() {
         do {
             val token = lexicalAnalyzer.lex()
-            if (token.kind != SyntaxKind.Token.BadToken && token.kind != SyntaxKind.Token.WhiteSpaceToken) tokens.add(
-                token
-            )
+            if (token.kind != SyntaxKind.Token.BadToken && token.kind != SyntaxKind.Token.WhiteSpaceToken) {
+                tokens.add(
+                    token
+                )
+            }
         } while (token.kind != SyntaxKind.Token.EndOfFileToken)
     }
 
@@ -66,6 +68,10 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
             left = UnaryExpressionSyntax(operand, operatorToken)
 
         } else {
+            //if your priority is 0 you are in binary
+            // expression so your parse will be your left and
+            // below we will parse the right part
+
             left = parsePrimaryExpression()
         }
         while (true) {
@@ -91,7 +97,7 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
 
             SyntaxKind.Token.BooleanToken.TrueToken,
             SyntaxKind.Token.BooleanToken.FalseToken
-            -> {
+                -> {
                 val value = current.kind == SyntaxKind.Token.BooleanToken.TrueToken
                 val keywordToken = nextToken()
                 return LiteralExpressionSyntax(keywordToken, value)

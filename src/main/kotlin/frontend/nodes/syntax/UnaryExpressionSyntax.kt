@@ -1,11 +1,16 @@
 package com.moj.najiz.frontend.nodes.syntax
 
 import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind
+import com.moj.najiz.frontend.nodes.binding.AnnotationExpression
+import com.moj.najiz.frontend.nodes.binding.Annotator
 
 class UnaryExpressionSyntax(
     private val operand: ExpressionSyntax,
     private val operatorToken: SyntaxToken,
 ) : ExpressionSyntax() {
+    override fun annotate(annotator: Annotator): AnnotationExpression {
+        return annotator.annotate(this)
+    }
 
     override val kind: SyntaxKind
         get() = SyntaxKind.Expression.UnaryExpressionSyntax

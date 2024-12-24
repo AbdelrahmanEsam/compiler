@@ -12,39 +12,28 @@ class Annotator {
     val diagnostics: Diagnostic.DiagnosticsBag
         get() = _diagnostics
 
-
-    fun annotate(expression: ExpressionSyntax): AnnotationExpression {
-        return when (expression.kind) {
-            Expression.BinaryExpressionSyntax -> (expression as BinaryExpressionSyntax).annotateBinaryExpression()
-            Expression.LiteralExpressionSyntax -> (expression as LiteralExpressionSyntax).annotateLiteralExpression()
-            Expression.UnaryExpressionSyntax -> (expression as UnaryExpressionSyntax).annotateUnaryExpression()
-            Expression.ParenthesizedExpressionSyntax -> (expression as ParenthesizedExpressionSyntax).annotateParenthesizedExpression()
-            else -> throw Exception("unexpected token ${expression.kind}")
-        }
-    }
-
-    private fun BinaryExpressionSyntax.annotateBinaryExpression(): AnnotationExpression {
-        val leftAnnotatedExpression = annotate(this.leftExpression)
-        val rightAnnotatedExpression = annotate(this.rightExpression)
-        val annotatedUnaryKind = annotateBinaryExpressionKind(
-            this.operator.kind,
+    fun annotate(expression: BinaryExpressionSyntax): AnnotationExpression {
+        val leftAnnotatedExpression = expression.leftExpression.annotate(this)
+        val rightAnnotatedExpression = expression.rightExpression.annotate(this)
+        val annotatedBinaryKind = this.annotateBinaryExpressionKind(
+            expression.operator.kind,
             leftAnnotatedExpression.value,
             rightAnnotatedExpression.value
         )
 
-        annotatedUnaryKind?.let {
+        annotatedBinaryKind?.let {
 
             return AnnotationBinaryExpression(
                 _left = leftAnnotatedExpression,
                 _right = rightAnnotatedExpression,
-                _operatorKind = annotatedUnaryKind,
+                _operatorKind = annotatedBinaryKind,
             )
 
         }
 
         _diagnostics.reportUndefinedBinaryOperator(
-            operator.textSpan,
-            operator.text,
+            expression.operator.textSpan,
+            expression.operator.text,
             leftAnnotatedExpression.value::class,
             rightAnnotatedExpression.value::class
         )
@@ -53,38 +42,44 @@ class Annotator {
         return leftAnnotatedExpression
     }
 
-    private fun LiteralExpressionSyntax.annotateLiteralExpression(): AnnotationExpression {
-        return AnnotationLiteralExpression(if (value != null) value!! else 0)
-    }
 
-
-    private fun UnaryExpressionSyntax.annotateUnaryExpression(): AnnotationExpression {
-
-
-        val annotatedOperand = annotate(this.operandExpression)
-        val annotatedUnaryKind = annotateUnaryOperatorKind(this.operator.kind, annotatedOperand.value)
-
-
-        annotatedUnaryKind?.let {
-            return AnnotationUnaryExpression(
-                _operatorKind = annotatedUnaryKind,
-                _annotationExpression = annotatedOperand
-            )
+    fun annotate(expression: LiteralExpressionSyntax): AnnotationExpression {
+        expression.apply {
+            return AnnotationLiteralExpression(if (value != null) value!! else 0)
         }
-
-
-        _diagnostics.reportUndefinedUnaryOperator(operator.textSpan, operator.text, annotatedOperand.value::class)
-        return annotatedOperand
     }
 
 
-    private fun ParenthesizedExpressionSyntax.annotateParenthesizedExpression(): AnnotationExpression {
-        val annotatedExpression = annotate(this.coreExpression)
-        return AnnotationParenthesizedExpression(
-            openToken = AnnotationParenthesizedOperatorKind.OpenBracket,
-            _coreExpression = annotatedExpression,
-            closeToken = AnnotationParenthesizedOperatorKind.CloseBracket,
-        )
+    fun annotate(expression: UnaryExpressionSyntax): AnnotationExpression {
+        expression.apply {
+            val annotatedOperand = this.operandExpression.annotate(this@Annotator)
+            val annotatedUnaryKind = annotateUnaryOperatorKind(this.operator.kind, annotatedOperand.value)
+
+
+            annotatedUnaryKind?.let {
+                return AnnotationUnaryExpression(
+                    _operatorKind = annotatedUnaryKind,
+                    _annotationExpression = annotatedOperand
+                )
+            }
+
+
+            _diagnostics.reportUndefinedUnaryOperator(operator.textSpan, operator.text, annotatedOperand.value::class)
+            return annotatedOperand
+        }
+    }
+
+
+    fun annotate(expressions: ParenthesizedExpressionSyntax): AnnotationExpression {
+        expressions.apply {
+
+
+            val annotatedExpression = this.coreExpression.annotate(this@Annotator)
+            return AnnotationParenthesizedExpression(
+                openToken = AnnotationParenthesizedOperatorKind.OpenBracket,
+                _coreExpression = annotatedExpression,
+                closeToken = AnnotationParenthesizedOperatorKind.CloseBracket,
+            )
 
 
 //        _diagnostics.reportUndefinedParenthesizedOperator(
@@ -96,7 +91,8 @@ class Annotator {
 //            "parenthesized operator ${annotatedExpression.value}" +
 //                    " isn't defined as ${this.kind} and ${annotatedExpression.value::class}"
 //        )
-        return annotatedExpression
+            return annotatedExpression
+        }
     }
 
 

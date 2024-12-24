@@ -1,6 +1,5 @@
 package com.moj.najiz.frontend.diagnostics
 
-import com.moj.najiz.frontend.diagnostics.TextSpan
 import com.moj.najiz.frontend.diagnostics.Diagnostic.DiagnosticsBag
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -33,7 +32,6 @@ class Diagnostic(private val _textSpan: TextSpan, private val _message: String) 
         fun reportInvalidInt(textSpan: TextSpan, text: String, type: KType) {
             val message = "the number $text isn't valid type"
             report(span = textSpan, message)
-
         }
 
         fun reportInvalidDouble(textSpan: TextSpan, text: String, type: KType) {
