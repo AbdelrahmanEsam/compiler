@@ -12,7 +12,7 @@ class Compiler(private val _syntaxTree: SyntaxTree) {
         get() = _syntaxTree
 
 
-    fun evaluate(annotator: Annotator, evaluator: Evaluator): EvaluationResult {
+    fun compile(annotator: Annotator, evaluator: Evaluator): EvaluationResult {
 
         val annotatedResult = syntaxTree.root.annotate(annotator)
         val evaluatorDiagnostics: Diagnostic.DiagnosticsBag = syntaxTree.diagnosticsBag + annotator.diagnostics

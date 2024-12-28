@@ -58,7 +58,19 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
         return SyntaxTree(diagnostics, expression, endOfFileToken)
     }
 
-    private fun parseExpression(parentPriority: Int = 0): ExpressionSyntax {
+    private fun parseExpression() : ExpressionSyntax
+    {
+        if(peek(0).kind == SyntaxKind.Token.IdentifierToken && peek(1).kind == SyntaxKind.Token.AssignmentToken){
+        val  identifierToken = nextToken()
+        val syntaxToken =     nextToken()
+        val rightExpression = parseBinaryExpression()
+        return  AssignmentExpressionSyntax(identifierToken,syntaxToken,rightExpression)
+        }
+
+        return  parseBinaryExpression()
+    }
+
+    private fun parseBinaryExpression(parentPriority: Int = 0): ExpressionSyntax {
         var left: ExpressionSyntax
         val unaryOperatorPriority = current.kind.getUnaryPriority()
         if (unaryOperatorPriority != 0 && unaryOperatorPriority > parentPriority) {
@@ -78,7 +90,7 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
             val tokenPriority = current.kind.getBinaryPriority()
             if (tokenPriority == 0 || tokenPriority <= parentPriority) break
             val operatorToken = nextToken()
-            val right = parseExpression(tokenPriority)
+            val right = parseBinaryExpression(tokenPriority)
             left = BinaryExpressionSyntax(left, operatorToken, right)
         }
         return left
@@ -89,7 +101,7 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
         when (current.kind) {
             SyntaxKind.Token.BracketsToken.OpenBracketToken -> {
                 val left = nextToken()
-                val expression = parseExpression()
+                val expression = parseBinaryExpression()
                 val right = match(SyntaxKind.Token.BracketsToken.CloseBracketToken)
                 val parenthesizedExpressionSyntax = ParenthesizedExpressionSyntax(left, expression, right)
                 return parenthesizedExpressionSyntax
@@ -101,6 +113,11 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
                 val value = current.kind == SyntaxKind.Token.BooleanToken.TrueToken
                 val keywordToken = nextToken()
                 return LiteralExpressionSyntax(keywordToken, value)
+            }
+
+            SyntaxKind.Token.IdentifierToken -> {
+                val identifierToken = nextToken()
+                return  NameExpressionSyntax(identifierToken)
             }
 
             else -> {

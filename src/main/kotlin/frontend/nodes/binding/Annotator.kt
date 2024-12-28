@@ -6,19 +6,54 @@ import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind.*
 import com.moj.najiz.frontend.nodes.syntax.*
 import kotlin.reflect.typeOf
 
-class Annotator {
+class Annotator(private val variables : Map<String,Any>) {
 
     private val _diagnostics: Diagnostic.DiagnosticsBag = Diagnostic.DiagnosticsBag()
     val diagnostics: Diagnostic.DiagnosticsBag
         get() = _diagnostics
 
+
+    fun annotate(expression: NameExpressionSyntax): AnnotationExpression {
+        expression.apply {
+            if(!variables.containsKey(expression.identifier.text))
+            {
+                diagnostics.reportUndefinedName(expression.identifier.textSpan,expression.identifier.text)
+            }
+           val value = variables[expression.identifier.text]
+            val operandKind = value!!::class.java
+            return AnnotationNameExpression(
+                name  = expression.identifier.text!!,
+                type = operandKind
+            )
+        }
+    }
+
+    fun annotate(expression: AssignmentExpressionSyntax): AnnotationExpression {
+        expression.apply {
+            val name = this.identifier.text
+            variables
+            return AnnotationAssignmentExpression(name ?: "",expression.expression.annotate(this@Annotator))
+        }
+    }
+
     fun annotate(expression: BinaryExpressionSyntax): AnnotationExpression {
         val leftAnnotatedExpression = expression.leftExpression.annotate(this)
         val rightAnnotatedExpression = expression.rightExpression.annotate(this)
+        val actualLeftValue =  if(leftAnnotatedExpression is AnnotationNameExpression){
+             variables[leftAnnotatedExpression.value.toString()]
+        } else {
+            leftAnnotatedExpression.value
+        }
+
+        val actualRightValue =  if(rightAnnotatedExpression is AnnotationNameExpression){
+            variables[rightAnnotatedExpression.value.toString()]
+        } else {
+            rightAnnotatedExpression.value
+        }
         val annotatedBinaryKind = this.annotateBinaryExpressionKind(
             expression.operator.kind,
-            leftAnnotatedExpression.value,
-            rightAnnotatedExpression.value
+            actualLeftValue!!,
+            actualRightValue!!
         )
 
         annotatedBinaryKind?.let {
@@ -32,10 +67,10 @@ class Annotator {
         }
 
         _diagnostics.reportUndefinedBinaryOperator(
-            expression.operator.textSpan,
-            expression.operator.text,
-            leftAnnotatedExpression.value::class,
-            rightAnnotatedExpression.value::class
+            textSpan = expression.operator.textSpan,
+            operator = expression.operator.text,
+            rightExpressionType = leftAnnotatedExpression.value::class,
+            leftExpressionType = rightAnnotatedExpression.value::class
         )
 
 
@@ -50,10 +85,12 @@ class Annotator {
     }
 
 
+
+
     fun annotate(expression: UnaryExpressionSyntax): AnnotationExpression {
         expression.apply {
             val annotatedOperand = this.operandExpression.annotate(this@Annotator)
-            val annotatedUnaryKind = annotateUnaryOperatorKind(this.operator.kind, annotatedOperand.value)
+            val annotatedUnaryKind = annotateUnaryOperatorKind(this.operator.kind, expression.operator)
 
 
             annotatedUnaryKind?.let {
@@ -80,18 +117,6 @@ class Annotator {
                 _coreExpression = annotatedExpression,
                 closeToken = AnnotationParenthesizedOperatorKind.CloseBracket,
             )
-
-
-//        _diagnostics.reportUndefinedParenthesizedOperator(
-//            coreExpression ,
-//            annotatedExpression.value, kind, annotatedExpression.value::class
-//        )
-//
-//        _diagnostics.add(
-//            "parenthesized operator ${annotatedExpression.value}" +
-//                    " isn't defined as ${this.kind} and ${annotatedExpression.value::class}"
-//        )
-            return annotatedExpression
         }
     }
 
@@ -137,8 +162,6 @@ class Annotator {
         leftValue: Any,
         rightValue: Any
     ): AnnotationBinaryOperator? {
-
-
         if (leftValue is Int || rightValue is Int) {
             return when (operandKind) {
                 Token.MathOperatorsToken.PlusToken -> AnnotationBinaryOperator.annotate(

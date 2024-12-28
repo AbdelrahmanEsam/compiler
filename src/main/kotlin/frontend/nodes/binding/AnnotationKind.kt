@@ -10,6 +10,8 @@ sealed interface AnnotationKind {
         data object BinaryExpression : AnnotationExpressionKind
         data object LiteralExpression : AnnotationExpressionKind
         data object AnnotationParenthesizedExpression : AnnotationExpressionKind
+        data object AnnotationNameExpression : AnnotationExpressionKind
+        data object AnnotationAssignmentExpression : AnnotationExpressionKind
 
     }
 }

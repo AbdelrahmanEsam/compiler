@@ -17,6 +17,11 @@ class LexicalAnalyzer(private val text: String) {
             return if (position >= text.length) null else text[position]
         }
 
+    private val lookAhead: Char?
+        get() {
+            return if (position+1 >= text.length) null else text[position+1]
+        }
+
     private val diagnostics: Diagnostic.DiagnosticsBag = Diagnostic.DiagnosticsBag()
 
     private fun next() {
@@ -216,13 +221,18 @@ class LexicalAnalyzer(private val text: String) {
             )
 
 
-            '=' -> SyntaxToken(
+            '=' -> if(lookAhead == '=') SyntaxToken(
                 SyntaxKind.Token.EqualityToken,
                 position.also {
                     position += 2
                 },
                 "==",
                 "=="
+            ) else SyntaxToken(
+                SyntaxKind.Token.AssignmentToken,
+                position++,
+                "=",
+                "="
             )
 
 

@@ -2,7 +2,7 @@ package com.moj.najiz.frontend.expressionEvaluator
 
 import com.moj.najiz.frontend.nodes.binding.*
 
-class Evaluator {
+class Evaluator(private val variables: MutableMap<String, Any>) {
 
 
     fun evaluate(expression: AnnotationLiteralExpression): Any {
@@ -88,5 +88,15 @@ class Evaluator {
 
             else -> throw Exception("unExpected unary  operator ${expression.operand}")
         }
+    }
+
+    fun evaluate(expression: AnnotationAssignmentExpression,name : String): Any {
+        val evaluatedValue = expression.expression.evaluate(this)
+        variables[name] = evaluatedValue
+        return variables[name]!!
+    }
+
+    fun evaluate(name : String): Any {
+        return variables[name]!!
     }
 }

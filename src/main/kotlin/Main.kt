@@ -9,29 +9,34 @@ import com.moj.najiz.frontend.nodes.syntax.SyntaxNode
 import com.moj.najiz.frontend.nodes.syntax.SyntaxToken
 
 fun main() {
+    val variables = mutableMapOf<String, Any>()
+    while (true) {
 
-    val code = readlnOrNull()?.trim()
-    code?.let {
-        val lexicalAnalyzer = LexicalAnalyzer(code)
-        val parser = Parser(lexicalAnalyzer)
-        val syntaxTree = parser.parse()
-        printTree(syntaxTree.root)
-        if (syntaxTree.diagnosticsBag.diagnostics.isNotEmpty()) {
-            syntaxTree.diagnosticsBag.forEach {
-                println(it.message)
-            }
-        } else {
-            val compiler = Compiler(syntaxTree)
-            val evaluationResult = compiler.evaluate(Annotator(), Evaluator())
-            if (evaluationResult.diagnostics.diagnostics.isNotEmpty()) {
-                evaluationResult.diagnostics.diagnostics.forEach {
+
+        val code = readlnOrNull()?.trim()
+        code?.let {
+            val lexicalAnalyzer = LexicalAnalyzer(code)
+            val parser = Parser(lexicalAnalyzer)
+            val syntaxTree = parser.parse()
+            printTree(syntaxTree.root)
+            if (syntaxTree.diagnosticsBag.diagnostics.isNotEmpty()) {
+                syntaxTree.diagnosticsBag.forEach {
                     println(it.message)
                 }
-                return
-            }
-            println(evaluationResult.value)
-        }
+            } else {
+                val compiler = Compiler(syntaxTree)
 
+                val evaluationResult = compiler.compile(Annotator(variables), Evaluator(variables))
+                if (evaluationResult.diagnostics.diagnostics.isNotEmpty()) {
+                    evaluationResult.diagnostics.diagnostics.forEach {
+                        println(it.message)
+                    }
+                    return
+                }
+                println(evaluationResult.value)
+            }
+
+        }
     }
 
 

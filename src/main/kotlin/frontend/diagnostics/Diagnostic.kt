@@ -70,6 +70,11 @@ class Diagnostic(private val _textSpan: TextSpan, private val _message: String) 
 
         }
 
+        fun reportUndefinedName(textSpan: TextSpan, text: String?) {
+            val message = "undefined variable name $text"
+            report(textSpan, message)
+        }
+
 
 //        fun reportUndefinedParenthesizedOperator(
 //            value: Any,
