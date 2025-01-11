@@ -4,7 +4,7 @@ import com.moj.najiz.frontend.diagnostics.Diagnostic
 import com.moj.najiz.frontend.lexicalAnalyzer.LexicalAnalyzer
 import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind
 import com.moj.najiz.frontend.nodes.syntax.*
-import com.moj.najiz.frontend.nodes.syntax.frontend.nodes.syntax.NumberExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.NumberExpressionSyntax
 
 class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
     private var position = 0
@@ -16,6 +16,7 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
     private val diagnostics: Diagnostic.DiagnosticsBag = Diagnostic.DiagnosticsBag()
 
     private fun getTokens() {
+        tokens.clear()
         do {
             val token = lexicalAnalyzer.lex()
             if (token.kind != SyntaxKind.Token.BadToken && token.kind != SyntaxKind.Token.WhiteSpaceToken) {

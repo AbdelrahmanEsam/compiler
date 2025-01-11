@@ -5,7 +5,7 @@ import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind
 import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind.*
 import com.moj.najiz.frontend.nodes.binding.AnnotationNumberExpression
 import com.moj.najiz.frontend.nodes.syntax.*
-import com.moj.najiz.frontend.nodes.syntax.frontend.nodes.syntax.NumberExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.NumberExpressionSyntax
 import kotlin.reflect.typeOf
 
 class Annotator(private val variables : Map<String,Any>) {

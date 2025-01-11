@@ -19,6 +19,21 @@ class LexicalAnalyzerTest {
     }
 
     @Test
+    fun inputBackSlashWithNLetterShouldReturnWhiteSpaceToken()
+    {
+        lexicalAnalyzer.setCodeInput("\n")
+        return assertEquals(SyntaxKind.Token.WhiteSpaceToken,lexicalAnalyzer.lex().kind)
+    }
+
+    @Test
+    fun inputBackSlashWithRLetterShouldReturnWhiteSpaceToken()
+    {
+        lexicalAnalyzer.setCodeInput("\r")
+        return assertEquals(SyntaxKind.Token.WhiteSpaceToken,lexicalAnalyzer.lex().kind)
+    }
+
+
+    @Test
     fun inputIsThreeShouldReturnNumberToken()
     {
         lexicalAnalyzer.setCodeInput("3")
