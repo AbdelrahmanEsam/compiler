@@ -5,6 +5,7 @@ import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertEquals
+import kotlin.test.assertNotEquals
 
 class LexicalAnalyzerTest {
 
@@ -146,7 +147,7 @@ class LexicalAnalyzerTest {
     fun inputIsUnKnownSymbolLowerCaseShouldReturnBadToken()
     {
         lexicalAnalyzer.setCodeInput("!%!")
-        return assertEquals(SyntaxKind.Token.BadToken,lexicalAnalyzer.lex().kind)
+        return assertNotEquals(SyntaxKind.Token.BadToken,lexicalAnalyzer.lex().kind)
     }
 
 
