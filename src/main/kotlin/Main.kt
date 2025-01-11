@@ -15,7 +15,8 @@ fun main() {
 
         val code = readlnOrNull()?.trim()
         code?.let {
-            val lexicalAnalyzer = LexicalAnalyzer(code)
+            val lexicalAnalyzer = LexicalAnalyzer()
+            lexicalAnalyzer.setCodeInput(code)
             val parser = Parser(lexicalAnalyzer)
             val syntaxTree = parser.parse()
             printTree(syntaxTree.root)

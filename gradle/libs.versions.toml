@@ -1,10 +1,13 @@
 [versions]
 kotlin = "2.1.0"
 java = "21"
-
+junit5="5.9.3"
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-reflection = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
+
 
 
 [plugins]

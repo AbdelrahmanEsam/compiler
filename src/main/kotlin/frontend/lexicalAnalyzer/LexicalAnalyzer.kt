@@ -7,19 +7,25 @@ import com.moj.najiz.frontend.nodes.syntax.getKeywordKind
 import com.moj.najiz.frontend.nodes.syntax.toBoolean
 import kotlin.reflect.typeOf
 
-class LexicalAnalyzer(private val text: String) {
+class LexicalAnalyzer {
+
+    private var code: String = ""
+
+    fun setCodeInput(code: String) {
+        this.code = code
+    }
 
 
     private var position: Int = 0
 
     private val currentChar: Char?
         get() {
-            return if (position >= text.length) null else text[position]
+            return if (position >= code.length) null else code[position]
         }
 
     private val lookAhead: Char?
         get() {
-            return if (position+1 >= text.length) null else text[position+1]
+            return if (position + 1 >= code.length) null else code[position + 1]
         }
 
     private val diagnostics: Diagnostic.DiagnosticsBag = Diagnostic.DiagnosticsBag()
@@ -57,7 +63,7 @@ class LexicalAnalyzer(private val text: String) {
 
 
     private fun spaceToken(): SyntaxToken? {
-        return if (position >= text.length) {
+        return if (position >= code.length) {
             return SyntaxToken(
                 SyntaxKind.Token.EndOfFileToken,
                 position,
@@ -68,12 +74,12 @@ class LexicalAnalyzer(private val text: String) {
     }
 
     private fun isDigit(): SyntaxToken? {
-        return if (currentChar?.isDigit() == true || (currentChar == '.' && text[position+1].isDigit())) {
+        return if (currentChar?.isDigit() == true || (currentChar == '.' && code[position + 1].isDigit())) {
             val start = position
             while (currentChar?.isDigit() == true || currentChar == '.')
                 next()
             val length = position
-            val currentToken = text.substring(start, length)
+            val currentToken = code.substring(start, length)
             val actualValue = currentToken.runCatching {
                 if (currentToken.contains(".")) {
                     return@runCatching this.toDouble()
@@ -84,13 +90,13 @@ class LexicalAnalyzer(private val text: String) {
                 if (currentToken.contains(".")) {
                     diagnostics.reportInvalidDouble(
                         textSpan = TextSpan(_start = start, _length = length),
-                        text = text,
+                        text = code,
                         type = typeOf<Double>()
                     )
                 }
                 diagnostics.reportInvalidInt(
                     textSpan = TextSpan(_start = start, _length = length),
-                    text = text,
+                    text = code,
                     type = typeOf<Int>()
                 )
             }
@@ -108,7 +114,7 @@ class LexicalAnalyzer(private val text: String) {
             val start = position
             while (currentChar?.isWhitespace() == true) next()
             val length = position
-            val currentToken = text.substring(start, length)
+            val currentToken = code.substring(start, length)
             SyntaxToken(
                 SyntaxKind.Token.WhiteSpaceToken,
                 position,
@@ -123,7 +129,7 @@ class LexicalAnalyzer(private val text: String) {
             val start = position
             while (currentChar?.isLetter() == true) next()
             val length = position
-            val currentToken = text.substring(start, length)
+            val currentToken = code.substring(start, length)
             val kind = currentToken.getKeywordKind()
             val actualValue = if (kind != SyntaxKind.Token.IdentifierToken) {
                 currentToken.toBoolean()
@@ -183,7 +189,7 @@ class LexicalAnalyzer(private val text: String) {
                 ")"
             )
 
-            '!' -> return if (text[position + 1] == '=')
+            '!'  if(lookAhead == '=') ->
                 SyntaxToken(
                     SyntaxKind.Token.NotEqualityToken,
                     position.also {
@@ -192,12 +198,14 @@ class LexicalAnalyzer(private val text: String) {
                     "!=",
                     "!="
                 )
-            else SyntaxToken(
-                SyntaxKind.Token.BooleanOperatorToken.NotToken,
-                position++,
-                "!",
-                "!"
-            )
+
+            '!' if(lookAhead?.isWhitespace() == true || lookAhead == null) ->
+                SyntaxToken(
+                    SyntaxKind.Token.BooleanOperatorToken.NotToken,
+                    position++,
+                    "!",
+                    "!"
+                )
 
 
             '|' -> {
@@ -221,14 +229,16 @@ class LexicalAnalyzer(private val text: String) {
             )
 
 
-            '=' -> if(lookAhead == '=') SyntaxToken(
+            '=' if (lookAhead == '=') -> SyntaxToken(
                 SyntaxKind.Token.EqualityToken,
                 position.also {
                     position += 2
                 },
                 "==",
                 "=="
-            ) else SyntaxToken(
+            )
+
+            '=' -> SyntaxToken(
                 SyntaxKind.Token.AssignmentToken,
                 position++,
                 "=",

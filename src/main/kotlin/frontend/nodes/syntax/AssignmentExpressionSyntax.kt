@@ -10,6 +10,7 @@ class AssignmentExpressionSyntax(
     private val operatorToken: SyntaxToken,
     private val expressionSyntax: ExpressionSyntax,
 ) : ExpressionSyntax() {
+
     override fun annotate(annotator: Annotator): AnnotationExpression {
         return annotator.annotate(this)
     }
