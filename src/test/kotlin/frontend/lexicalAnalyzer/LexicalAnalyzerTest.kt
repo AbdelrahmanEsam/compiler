@@ -19,10 +19,10 @@ class LexicalAnalyzerTest {
     }
 
     @Test
-    fun inputIsThreeShouldReturnLiteralExpression()
+    fun inputIsThreeShouldReturnNumberToken()
     {
         lexicalAnalyzer.setCodeInput("3")
-        return assertEquals(SyntaxKind.Expression.LiteralExpressionSyntax,lexicalAnalyzer.lex().kind)
+        return assertEquals(SyntaxKind.Token.NumberToken,lexicalAnalyzer.lex().kind)
     }
 
     @Test

@@ -3,7 +3,9 @@ package com.moj.najiz.frontend.nodes.binding
 import com.moj.najiz.frontend.diagnostics.Diagnostic
 import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind
 import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind.*
+import com.moj.najiz.frontend.nodes.binding.AnnotationNumberExpression
 import com.moj.najiz.frontend.nodes.syntax.*
+import com.moj.najiz.frontend.nodes.syntax.frontend.nodes.syntax.NumberExpressionSyntax
 import kotlin.reflect.typeOf
 
 class Annotator(private val variables : Map<String,Any>) {
@@ -81,6 +83,12 @@ class Annotator(private val variables : Map<String,Any>) {
     fun annotate(expression: LiteralExpressionSyntax): AnnotationExpression {
         expression.apply {
             return AnnotationLiteralExpression(if (value != null) value!! else 0)
+        }
+    }
+
+    fun annotate(expression: NumberExpressionSyntax): AnnotationExpression {
+        expression.apply {
+            return AnnotationNumberExpression(if (value != null) value!! else 0)
         }
     }
 

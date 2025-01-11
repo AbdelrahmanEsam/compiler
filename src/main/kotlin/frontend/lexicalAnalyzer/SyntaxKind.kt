@@ -5,6 +5,7 @@ sealed interface SyntaxKind {
 
     sealed interface Token : SyntaxKind {
 
+        data object NumberToken : Token
         data object EqualityToken : Token
         data object AssignmentToken : Token
         data object NotEqualityToken : Token
@@ -49,6 +50,7 @@ sealed interface SyntaxKind {
         data object BinaryExpressionSyntax : Expression
         data object UnaryExpressionSyntax : Expression
         data object LiteralExpressionSyntax : Expression
+        data object NumberExpressionSyntax : Expression
         data object NameExpressionSyntax : Expression
         data object AssignmentExpressionSyntax : Expression
     }

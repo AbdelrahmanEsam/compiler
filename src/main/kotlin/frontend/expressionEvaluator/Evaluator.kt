@@ -1,6 +1,7 @@
 package com.moj.najiz.frontend.expressionEvaluator
 
 import com.moj.najiz.frontend.nodes.binding.*
+import com.moj.najiz.frontend.nodes.binding.AnnotationNumberExpression
 
 class Evaluator(private val variables: MutableMap<String, Any>) {
 
@@ -9,9 +10,14 @@ class Evaluator(private val variables: MutableMap<String, Any>) {
         return expression.value
     }
 
+    fun evaluate(expression: AnnotationNumberExpression): Any {
+        return expression.value
+    }
+
     fun evaluate(expression: AnnotationParenthesizedExpression): Any {
         return expression.coreExpression.evaluate(this)
     }
+
 
     fun evaluate(expression: AnnotationBinaryExpression): Any {
         val leftEvaluation = expression.leftExpression.evaluate(this)

@@ -4,6 +4,7 @@ import com.moj.najiz.frontend.diagnostics.Diagnostic
 import com.moj.najiz.frontend.lexicalAnalyzer.LexicalAnalyzer
 import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind
 import com.moj.najiz.frontend.nodes.syntax.*
+import com.moj.najiz.frontend.nodes.syntax.frontend.nodes.syntax.NumberExpressionSyntax
 
 class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
     private var position = 0
@@ -70,6 +71,8 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
         return  parseBinaryExpression()
     }
 
+
+
     private fun parseBinaryExpression(parentPriority: Int = 0): ExpressionSyntax {
         var left: ExpressionSyntax
         val unaryOperatorPriority = current.kind.getUnaryPriority()
@@ -118,6 +121,11 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
             SyntaxKind.Token.IdentifierToken -> {
                 val identifierToken = nextToken()
                 return  NameExpressionSyntax(identifierToken)
+            }
+
+            SyntaxKind.Token.NumberToken -> {
+                val numberToken = match(SyntaxKind.Token.NumberToken)
+                return  NumberExpressionSyntax(numberToken)
             }
 
             else -> {

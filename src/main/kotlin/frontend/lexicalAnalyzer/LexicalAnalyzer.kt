@@ -101,7 +101,7 @@ class LexicalAnalyzer {
                 )
             }
             SyntaxToken(
-                SyntaxKind.Expression.LiteralExpressionSyntax,
+                SyntaxKind.Token.NumberToken,
                 position,
                 currentToken,
                 actualValue
