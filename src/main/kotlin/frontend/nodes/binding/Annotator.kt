@@ -3,9 +3,7 @@ package com.moj.najiz.frontend.nodes.binding
 import com.moj.najiz.frontend.diagnostics.Diagnostic
 import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind
 import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind.*
-import com.moj.najiz.frontend.nodes.binding.AnnotationNumberExpression
 import com.moj.najiz.frontend.nodes.syntax.*
-import com.moj.najiz.frontend.nodes.syntax.NumberExpressionSyntax
 import kotlin.reflect.typeOf
 
 class Annotator(private val variables : Map<String,Any>) {
@@ -98,7 +96,7 @@ class Annotator(private val variables : Map<String,Any>) {
     fun annotate(expression: UnaryExpressionSyntax): AnnotationExpression {
         expression.apply {
             val annotatedOperand = this.operandExpression.annotate(this@Annotator)
-            val annotatedUnaryKind = annotateUnaryOperatorKind(this.operator.kind, expression.operator)
+            val annotatedUnaryKind = annotateUnaryOperatorKind(this.operator.kind)
 
 
             annotatedUnaryKind?.let {
@@ -131,11 +129,8 @@ class Annotator(private val variables : Map<String,Any>) {
 
     private fun annotateUnaryOperatorKind(
         operandKind: SyntaxKind,
-        annotationKind: Any,
     ): AnnotationUnaryOperator? {
 
-
-        if (annotationKind is Int) {
             return when (operandKind) {
                 Token.MathOperatorsToken.PlusToken -> AnnotationUnaryOperator.annotate(
                     syntaxKind = Token.MathOperatorsToken.PlusToken,
@@ -147,21 +142,14 @@ class Annotator(private val variables : Map<String,Any>) {
                     operandKind = typeOf<Int>()
                 )
 
-                else -> throw Exception("unexpected token $operandKind")
-
-            }
-        }
-
-        if (annotationKind is Boolean) {
-            return when (operandKind) {
                 Token.BooleanOperatorToken.NotToken -> AnnotationUnaryOperator.annotate(
                     syntaxKind = Token.BooleanOperatorToken.NotToken,
                     operandKind = typeOf<Boolean>()
                 )
 
                 else -> throw Exception("unexpected token $operandKind")
+
             }
-        }
         return null
     }
 

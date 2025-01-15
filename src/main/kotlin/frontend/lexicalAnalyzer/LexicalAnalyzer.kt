@@ -199,7 +199,7 @@ class LexicalAnalyzer {
                     "!="
                 )
 
-            '!' if(lookAhead?.isWhitespace() == true || lookAhead == null) ->
+            '!'  ->
                 SyntaxToken(
                     SyntaxKind.Token.BooleanOperatorToken.NotToken,
                     position++,
