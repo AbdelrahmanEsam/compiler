@@ -4,7 +4,7 @@ import com.moj.najiz.frontend.diagnostics.Diagnostic
 import com.moj.najiz.frontend.diagnostics.plus
 import com.moj.najiz.frontend.expressionEvaluator.EvaluationResult
 import com.moj.najiz.frontend.expressionEvaluator.Evaluator
-import com.moj.najiz.frontend.nodes.binding.Annotator
+import com.moj.najiz.frontend.annotator.Annotator
 import com.moj.najiz.frontend.nodes.syntax.SyntaxTree
 
 class Compiler(private val _syntaxTree: SyntaxTree) {

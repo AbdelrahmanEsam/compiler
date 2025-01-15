@@ -1,9 +1,26 @@
-package com.moj.najiz.frontend.nodes.binding
+package com.moj.najiz.frontend.annotator
 
 import com.moj.najiz.frontend.diagnostics.Diagnostic
 import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind
-import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind.*
-import com.moj.najiz.frontend.nodes.syntax.*
+import com.moj.najiz.frontend.nodes.binding.AnnotationAssignmentExpression
+import com.moj.najiz.frontend.nodes.binding.AnnotationBinaryExpression
+import com.moj.najiz.frontend.nodes.binding.AnnotationBinaryOperator
+import com.moj.najiz.frontend.nodes.binding.AnnotationExpression
+import com.moj.najiz.frontend.nodes.binding.AnnotationLiteralExpression
+import com.moj.najiz.frontend.nodes.binding.AnnotationNameExpression
+import com.moj.najiz.frontend.nodes.binding.AnnotationNumberExpression
+import com.moj.najiz.frontend.nodes.binding.AnnotationParenthesizedExpression
+import com.moj.najiz.frontend.nodes.binding.AnnotationParenthesizedOperatorKind
+import com.moj.najiz.frontend.nodes.binding.AnnotationUnaryExpression
+import com.moj.najiz.frontend.nodes.binding.AnnotationUnaryOperator
+import com.moj.najiz.frontend.nodes.syntax.AssignmentExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.BinaryExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.LiteralExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.NameExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.NumberExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.ParenthesizedExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.UnaryExpressionSyntax
+import kotlin.collections.get
 import kotlin.reflect.typeOf
 
 class Annotator(private val variables : Map<String,Any>) {
@@ -22,7 +39,7 @@ class Annotator(private val variables : Map<String,Any>) {
            val value = variables[expression.identifier.text]
             val operandKind = value!!::class.java
             return AnnotationNameExpression(
-                name  = expression.identifier.text!!,
+                name = expression.identifier.text!!,
                 type = operandKind
             )
         }
@@ -32,7 +49,7 @@ class Annotator(private val variables : Map<String,Any>) {
         expression.apply {
             val name = this.identifier.text
             variables
-            return AnnotationAssignmentExpression(name ?: "",expression.expression.annotate(this@Annotator))
+            return AnnotationAssignmentExpression(name ?: "", expression.expression.annotate(this@Annotator))
         }
     }
 
@@ -132,18 +149,18 @@ class Annotator(private val variables : Map<String,Any>) {
     ): AnnotationUnaryOperator? {
 
             return when (operandKind) {
-                Token.MathOperatorsToken.PlusToken -> AnnotationUnaryOperator.annotate(
-                    syntaxKind = Token.MathOperatorsToken.PlusToken,
+                SyntaxKind.Token.MathOperatorsToken.PlusToken -> AnnotationUnaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.MathOperatorsToken.PlusToken,
                     operandKind = typeOf<Int>()
                 )
 
-                Token.MathOperatorsToken.MinusToken -> AnnotationUnaryOperator.annotate(
-                    syntaxKind = Token.MathOperatorsToken.MinusToken,
+                SyntaxKind.Token.MathOperatorsToken.MinusToken -> AnnotationUnaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.MathOperatorsToken.MinusToken,
                     operandKind = typeOf<Int>()
                 )
 
-                Token.BooleanOperatorToken.NotToken -> AnnotationUnaryOperator.annotate(
-                    syntaxKind = Token.BooleanOperatorToken.NotToken,
+                SyntaxKind.Token.BooleanOperatorToken.NotToken -> AnnotationUnaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.BooleanOperatorToken.NotToken,
                     operandKind = typeOf<Boolean>()
                 )
 
@@ -160,38 +177,38 @@ class Annotator(private val variables : Map<String,Any>) {
     ): AnnotationBinaryOperator? {
         if (leftValue is Int || rightValue is Int) {
             return when (operandKind) {
-                Token.MathOperatorsToken.PlusToken -> AnnotationBinaryOperator.annotate(
-                    syntaxKind = Token.MathOperatorsToken.PlusToken,
+                SyntaxKind.Token.MathOperatorsToken.PlusToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.MathOperatorsToken.PlusToken,
                     leftType = Int,
                     rightType = Int
                 )
 
-                Token.MathOperatorsToken.MinusToken -> AnnotationBinaryOperator.annotate(
-                    syntaxKind = Token.MathOperatorsToken.MinusToken,
+                SyntaxKind.Token.MathOperatorsToken.MinusToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.MathOperatorsToken.MinusToken,
                     leftType = Int,
                     rightType = Int
                 )
 
-                Token.MathOperatorsToken.MultiplyToken -> AnnotationBinaryOperator.annotate(
-                    syntaxKind = Token.MathOperatorsToken.MultiplyToken,
+                SyntaxKind.Token.MathOperatorsToken.MultiplyToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.MathOperatorsToken.MultiplyToken,
                     leftType = Int,
                     rightType = Int
                 )
 
-                Token.MathOperatorsToken.SlashToken -> AnnotationBinaryOperator.annotate(
-                    syntaxKind = Token.MathOperatorsToken.SlashToken,
+                SyntaxKind.Token.MathOperatorsToken.SlashToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.MathOperatorsToken.SlashToken,
                     leftType = Int,
                     rightType = Int
                 )
 
-                Token.EqualityToken -> AnnotationBinaryOperator.annotate(
-                    syntaxKind = Token.EqualityToken,
+                SyntaxKind.Token.EqualityToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.EqualityToken,
                     leftType = Int,
                     rightType = Int,
                 )
 
-                Token.NotEqualityToken -> AnnotationBinaryOperator.annotate(
-                    syntaxKind = Token.NotEqualityToken,
+                SyntaxKind.Token.NotEqualityToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.NotEqualityToken,
                     leftType = Int,
                     rightType = Int,
                 )
@@ -202,26 +219,26 @@ class Annotator(private val variables : Map<String,Any>) {
 
         if (leftValue is Boolean || rightValue is Boolean) {
             return when (operandKind) {
-                Token.BooleanOperatorToken.AndToken -> AnnotationBinaryOperator.annotate(
-                    syntaxKind = Token.BooleanOperatorToken.AndToken,
+                SyntaxKind.Token.BooleanOperatorToken.AndToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.BooleanOperatorToken.AndToken,
                     leftType = Boolean,
                     rightType = Boolean
                 )
 
-                Token.BooleanOperatorToken.OrToken -> AnnotationBinaryOperator.annotate(
-                    syntaxKind = Token.BooleanOperatorToken.OrToken,
+                SyntaxKind.Token.BooleanOperatorToken.OrToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.BooleanOperatorToken.OrToken,
                     leftType = Boolean,
                     rightType = Boolean
                 )
 
-                Token.EqualityToken -> AnnotationBinaryOperator.annotate(
-                    syntaxKind = Token.EqualityToken,
+                SyntaxKind.Token.EqualityToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.EqualityToken,
                     leftType = Boolean,
                     rightType = Boolean
                 )
 
-                Token.NotEqualityToken -> AnnotationBinaryOperator.annotate(
-                    syntaxKind = Token.NotEqualityToken,
+                SyntaxKind.Token.NotEqualityToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.NotEqualityToken,
                     leftType = Boolean,
                     rightType = Boolean
                 )
