@@ -2,17 +2,7 @@ package com.moj.najiz.frontend.annotator
 
 import com.moj.najiz.frontend.diagnostics.Diagnostic
 import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind
-import com.moj.najiz.frontend.nodes.binding.AnnotationAssignmentExpression
-import com.moj.najiz.frontend.nodes.binding.AnnotationBinaryExpression
-import com.moj.najiz.frontend.nodes.binding.AnnotationBinaryOperator
-import com.moj.najiz.frontend.nodes.binding.AnnotationExpression
-import com.moj.najiz.frontend.nodes.binding.AnnotationLiteralExpression
-import com.moj.najiz.frontend.nodes.binding.AnnotationNameExpression
-import com.moj.najiz.frontend.nodes.binding.AnnotationNumberExpression
-import com.moj.najiz.frontend.nodes.binding.AnnotationParenthesizedExpression
-import com.moj.najiz.frontend.nodes.binding.AnnotationParenthesizedOperatorKind
-import com.moj.najiz.frontend.nodes.binding.AnnotationUnaryExpression
-import com.moj.najiz.frontend.nodes.binding.AnnotationUnaryOperator
+import com.moj.najiz.frontend.nodes.annotation.*
 import com.moj.najiz.frontend.nodes.syntax.AssignmentExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.BinaryExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.LiteralExpressionSyntax

@@ -1,4 +1,4 @@
-package com.moj.najiz.frontend.nodes.binding
+package com.moj.najiz.frontend.nodes.annotation
 
 interface AnnotationBinaryOperatorKind {
     data object Addition : AnnotationBinaryOperatorKind

@@ -1,7 +1,7 @@
 package com.moj.najiz.frontend.expressionEvaluator
 
-import com.moj.najiz.frontend.nodes.binding.*
-import com.moj.najiz.frontend.nodes.binding.AnnotationNumberExpression
+import com.moj.najiz.frontend.nodes.annotation.*
+import com.moj.najiz.frontend.nodes.annotation.*
 
 class Evaluator(private val variables: MutableMap<String, Any>) {
 

@@ -1,4 +1,4 @@
-package com.moj.najiz.frontend.nodes.binding
+package com.moj.najiz.frontend.nodes.annotation
 
 import com.moj.najiz.frontend.expressionEvaluator.Evaluator
 import com.moj.najiz.frontend.nodes.syntax.ExpressionSyntax

@@ -1,4 +1,4 @@
-package com.moj.najiz.frontend.nodes.binding
+package com.moj.najiz.frontend.nodes.annotation
 
 interface AnnotationUnaryOperatorKind {
     data object Identity : AnnotationUnaryOperatorKind
