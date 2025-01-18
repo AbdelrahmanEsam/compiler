@@ -10,6 +10,7 @@ import com.moj.najiz.frontend.nodes.syntax.NameExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.NumberExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.ParenthesizedExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.UnaryExpressionSyntax
+import com.moj.najiz.utils.isNumeric
 import kotlin.collections.get
 import kotlin.reflect.typeOf
 
@@ -165,7 +166,7 @@ class Annotator(private val variables : Map<String,Any>) {
         leftValue: Any,
         rightValue: Any
     ): AnnotationBinaryOperator? {
-        if (leftValue is Int || rightValue is Int) {
+        if (  leftValue.toString().isNumeric()  &&  rightValue.toString().isNumeric()) {
             return when (operandKind) {
                 SyntaxKind.Token.MathOperatorsToken.PlusToken -> AnnotationBinaryOperator.Companion.annotate(
                     syntaxKind = SyntaxKind.Token.MathOperatorsToken.PlusToken,
@@ -239,6 +240,9 @@ class Annotator(private val variables : Map<String,Any>) {
 
         return null
     }
+
+
+
 
 
 }

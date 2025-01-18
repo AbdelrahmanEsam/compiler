@@ -1,6 +1,7 @@
 package com.moj.najiz.frontend.expressionEvaluator
 
 import com.moj.najiz.frontend.nodes.annotation.*
+import com.moj.najiz.utils.isNumeric
 
 class Evaluator(private val variables: MutableMap<String, Any>) {
 
@@ -33,27 +34,37 @@ class Evaluator(private val variables: MutableMap<String, Any>) {
         }
 
 
-        if (leftEvaluation is Int && rightEvaluation is Int) {
-            return when (expression.operand.annotationKind) {
+        if (leftEvaluation.toString().isNumeric() && rightEvaluation.toString().isNumeric()) {
+            val leftExpressionValue = leftEvaluation.toString().toDouble()
+            val rightEvaluationValue = rightEvaluation.toString().toDouble()
+            val expressionResult =  when (expression.operand.annotationKind) {
                 AnnotationBinaryOperatorKind.Addition -> {
-                    leftEvaluation + rightEvaluation
+                    leftExpressionValue + rightEvaluationValue
                 }
 
                 AnnotationBinaryOperatorKind.Subtraction -> {
-                    leftEvaluation - rightEvaluation
+                    leftExpressionValue - rightEvaluationValue
                 }
 
                 AnnotationBinaryOperatorKind.Division -> {
-                    leftEvaluation / rightEvaluation
+                    leftExpressionValue / rightEvaluationValue
                 }
 
                 AnnotationBinaryOperatorKind.Multiplication -> {
-                    leftEvaluation * rightEvaluation
+                    leftExpressionValue * rightEvaluationValue
                 }
+
+
 
 
                 else -> throw Exception("unExpected binary operator ${expression.operand}")
             }
+
+            if(leftEvaluation is Int){
+                return expressionResult.toInt()
+            }
+
+            return expressionResult
         }
 
 
