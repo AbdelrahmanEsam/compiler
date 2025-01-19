@@ -20,7 +20,7 @@ class AnnotationUnaryExpression(
     override val value: Any
         get() = _operatorKind
 
-    override fun evaluate(evaluator: Evaluator): Any {
+    override fun evaluate(evaluator: Evaluator): Any? {
         return evaluator.evaluate(this)
     }
 }

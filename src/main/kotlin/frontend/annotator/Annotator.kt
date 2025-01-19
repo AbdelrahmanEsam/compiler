@@ -1,33 +1,52 @@
 package com.moj.najiz.frontend.annotator
 
+import com.moj.najiz.di.DIContainer
 import com.moj.najiz.frontend.diagnostics.Diagnostic
 import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind
 import com.moj.najiz.frontend.nodes.annotation.*
+import com.moj.najiz.frontend.nodes.annotation.scope.AnnotatedGlobalScope
+import com.moj.najiz.frontend.nodes.annotation.scope.AnnotatedScope
 import com.moj.najiz.frontend.nodes.syntax.AssignmentExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.BinaryExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.CompilationUnitSyntax
 import com.moj.najiz.frontend.nodes.syntax.LiteralExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.NameExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.NumberExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.ParenthesizedExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.UnaryExpressionSyntax
 import com.moj.najiz.utils.isNumeric
-import kotlin.collections.get
 import kotlin.reflect.typeOf
 
-class Annotator(private val variables : Map<String,Any>) {
+class Annotator(parentScope: AnnotatedScope? = null) {
 
     private val _diagnostics: Diagnostic.DiagnosticsBag = Diagnostic.DiagnosticsBag()
+    private var _annotatedScope: AnnotatedScope = DIContainer.getAnnotatedScope(parentScope)
+    val annotatedScope: AnnotatedScope
+        get() = _annotatedScope
     val diagnostics: Diagnostic.DiagnosticsBag
         get() = _diagnostics
+
+    companion object {
+        fun annotateGlobalScope(syntax: CompilationUnitSyntax): AnnotatedGlobalScope {
+            DIContainer.getAnnotator().apply {
+                return AnnotatedGlobalScope(
+                    null,
+                    this.diagnostics,
+                    this.annotatedScope.variables.toMutableMap(),
+                    syntax.annotate(this)
+                )
+            }
+        }
+
+    }
 
 
     fun annotate(expression: NameExpressionSyntax): AnnotationExpression {
         expression.apply {
-            if(!variables.containsKey(expression.identifier.text))
-            {
-                diagnostics.reportUndefinedName(expression.identifier.textSpan,expression.identifier.text)
+            if (!_annotatedScope.tryLookUp(expression.identifier.text)) {
+                diagnostics.reportUndefinedName(expression.identifier.textSpan, expression.identifier.text)
             }
-           val value = variables[expression.identifier.text]
+            val value = _annotatedScope.get(expression.identifier.text)
             val operandKind = value!!::class.java
             return AnnotationNameExpression(
                 name = expression.identifier.text!!,
@@ -39,7 +58,6 @@ class Annotator(private val variables : Map<String,Any>) {
     fun annotate(expression: AssignmentExpressionSyntax): AnnotationExpression {
         expression.apply {
             val name = this.identifier.text
-            variables
             return AnnotationAssignmentExpression(name ?: "", expression.expression.annotate(this@Annotator))
         }
     }
@@ -47,14 +65,14 @@ class Annotator(private val variables : Map<String,Any>) {
     fun annotate(expression: BinaryExpressionSyntax): AnnotationExpression {
         val leftAnnotatedExpression = expression.leftExpression.annotate(this)
         val rightAnnotatedExpression = expression.rightExpression.annotate(this)
-        val actualLeftValue =  if(leftAnnotatedExpression is AnnotationNameExpression){
-             variables[leftAnnotatedExpression.value.toString()]
+        val actualLeftValue = if (leftAnnotatedExpression is AnnotationNameExpression) {
+            _annotatedScope.get(leftAnnotatedExpression.value.toString())
         } else {
             leftAnnotatedExpression.value
         }
 
-        val actualRightValue =  if(rightAnnotatedExpression is AnnotationNameExpression){
-            variables[rightAnnotatedExpression.value.toString()]
+        val actualRightValue = if (rightAnnotatedExpression is AnnotationNameExpression) {
+            _annotatedScope.get(rightAnnotatedExpression.value.toString())
         } else {
             rightAnnotatedExpression.value
         }
@@ -99,8 +117,6 @@ class Annotator(private val variables : Map<String,Any>) {
     }
 
 
-
-
     fun annotate(expression: UnaryExpressionSyntax): AnnotationExpression {
         expression.apply {
             val annotatedOperand = this.operandExpression.annotate(this@Annotator)
@@ -139,25 +155,25 @@ class Annotator(private val variables : Map<String,Any>) {
         operandKind: SyntaxKind,
     ): AnnotationUnaryOperator? {
 
-            return when (operandKind) {
-                SyntaxKind.Token.MathOperatorsToken.PlusToken -> AnnotationUnaryOperator.Companion.annotate(
-                    syntaxKind = SyntaxKind.Token.MathOperatorsToken.PlusToken,
-                    operandKind = typeOf<Int>()
-                )
+        return when (operandKind) {
+            SyntaxKind.Token.MathOperatorsToken.PlusToken -> AnnotationUnaryOperator.Companion.annotate(
+                syntaxKind = SyntaxKind.Token.MathOperatorsToken.PlusToken,
+                operandKind = typeOf<Int>()
+            )
 
-                SyntaxKind.Token.MathOperatorsToken.MinusToken -> AnnotationUnaryOperator.Companion.annotate(
-                    syntaxKind = SyntaxKind.Token.MathOperatorsToken.MinusToken,
-                    operandKind = typeOf<Int>()
-                )
+            SyntaxKind.Token.MathOperatorsToken.MinusToken -> AnnotationUnaryOperator.Companion.annotate(
+                syntaxKind = SyntaxKind.Token.MathOperatorsToken.MinusToken,
+                operandKind = typeOf<Int>()
+            )
 
-                SyntaxKind.Token.BooleanOperatorToken.NotToken -> AnnotationUnaryOperator.Companion.annotate(
-                    syntaxKind = SyntaxKind.Token.BooleanOperatorToken.NotToken,
-                    operandKind = typeOf<Boolean>()
-                )
+            SyntaxKind.Token.BooleanOperatorToken.NotToken -> AnnotationUnaryOperator.Companion.annotate(
+                syntaxKind = SyntaxKind.Token.BooleanOperatorToken.NotToken,
+                operandKind = typeOf<Boolean>()
+            )
 
-                else -> throw Exception("unexpected token $operandKind")
+            else -> throw Exception("unexpected token $operandKind")
 
-            }
+        }
         return null
     }
 
@@ -166,7 +182,7 @@ class Annotator(private val variables : Map<String,Any>) {
         leftValue: Any,
         rightValue: Any
     ): AnnotationBinaryOperator? {
-        if (  leftValue.toString().isNumeric()  &&  rightValue.toString().isNumeric()) {
+        if (leftValue.toString().isNumeric() && rightValue.toString().isNumeric()) {
             return when (operandKind) {
                 SyntaxKind.Token.MathOperatorsToken.PlusToken -> AnnotationBinaryOperator.Companion.annotate(
                     syntaxKind = SyntaxKind.Token.MathOperatorsToken.PlusToken,
@@ -240,9 +256,6 @@ class Annotator(private val variables : Map<String,Any>) {
 
         return null
     }
-
-
-
 
 
 }

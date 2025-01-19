@@ -10,7 +10,7 @@ class AnnotationNumberExpression(private val _value: Any) : AnnotationExpression
    override val value: Any
         get() = _value
 
-    override fun evaluate(evaluator: Evaluator): Any {
+    override fun evaluate(evaluator: Evaluator): Any? {
         return evaluator.evaluate(this)
     }
 

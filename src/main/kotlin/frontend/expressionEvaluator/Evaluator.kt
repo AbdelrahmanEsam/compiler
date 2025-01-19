@@ -1,9 +1,10 @@
 package com.moj.najiz.frontend.expressionEvaluator
 
 import com.moj.najiz.frontend.nodes.annotation.*
+import com.moj.najiz.frontend.nodes.annotation.scope.AnnotatedGlobalScope
 import com.moj.najiz.utils.isNumeric
 
-class Evaluator(private val variables: MutableMap<String, Any>) {
+class Evaluator(private val annotatedScope: AnnotatedGlobalScope? = null) {
 
 
     fun evaluate(expression: AnnotationLiteralExpression): Any {
@@ -13,7 +14,7 @@ class Evaluator(private val variables: MutableMap<String, Any>) {
     fun evaluate(expression: AnnotationNumberExpression): Any = expression.value
 
 
-    fun evaluate(expression: AnnotationParenthesizedExpression): Any {
+    fun evaluate(expression: AnnotationParenthesizedExpression): Any? {
         return expression.coreExpression.evaluate(this)
     }
 
@@ -105,13 +106,15 @@ class Evaluator(private val variables: MutableMap<String, Any>) {
         }
     }
 
-    fun evaluate(expression: AnnotationAssignmentExpression,name : String): Any {
+    fun evaluate(expression: AnnotationAssignmentExpression,name : String): Any? {
         val evaluatedValue = expression.expression.evaluate(this)
-        variables[name] = evaluatedValue
-        return variables[name]!!
+        evaluatedValue?.let {
+            annotatedScope?.tryDeclare(name , evaluatedValue)
+        }
+        return annotatedScope?.get(name)
     }
 
-    fun evaluate(name : String): Any {
-        return variables[name]!!
+    fun evaluate(name : String): Any? {
+        return annotatedScope?.get(name)
     }
 }

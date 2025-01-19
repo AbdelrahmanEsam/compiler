@@ -1,16 +1,12 @@
 package com.moj.najiz
 
 import com.moj.najiz.frontend.compilation.Compiler
-import com.moj.najiz.frontend.expressionEvaluator.Evaluator
-import com.moj.najiz.frontend.lexicalAnalyzer.LexicalAnalyzer
-import com.moj.najiz.frontend.annotator.Annotator
-import com.moj.najiz.frontend.parser.Parser
 import com.moj.najiz.frontend.nodes.syntax.SyntaxNode
 import com.moj.najiz.frontend.nodes.syntax.SyntaxToken
 import com.moj.najiz.frontend.nodes.syntax.SyntaxTree
 
 fun main() {
-    val variables = mutableMapOf<String, Any>()
+    val compiler = Compiler()
     while (true) {
 
 
@@ -23,9 +19,8 @@ fun main() {
                     println(it.message)
                 }
             } else {
-                val compiler = Compiler(syntaxTree)
-
-                val evaluationResult = compiler.compile(Annotator(variables), Evaluator(variables))
+                compiler.setSyntaxTree(syntaxTree)
+                val evaluationResult = compiler.compile()
                 if (evaluationResult.diagnostics.diagnostics.isNotEmpty()) {
                     evaluationResult.diagnostics.diagnostics.forEach {
                         println(it.message)

@@ -17,7 +17,7 @@ class AnnotationNameExpression(
     override val value: Any
         get() = name
 
-    override fun evaluate(evaluator: Evaluator): Any {
+    override fun evaluate(evaluator: Evaluator): Any? {
         return evaluator.evaluate(name)
     }
 }
