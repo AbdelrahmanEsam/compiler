@@ -16,6 +16,9 @@ class CompilationUnitSyntax(private val _root : ExpressionSyntax,private val _to
     val token : SyntaxToken
         get() = _token
 
+    override val children: List<SyntaxNode>
+        get() = listOf(_root)
+
     fun annotate(annotator: Annotator) : AnnotationExpression = this.root.annotate(annotator)
 
 }

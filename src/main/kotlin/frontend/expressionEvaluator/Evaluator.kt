@@ -10,9 +10,8 @@ class Evaluator(private val variables: MutableMap<String, Any>) {
         return expression.value
     }
 
-    fun evaluate(expression: AnnotationNumberExpression): Any {
-        return expression.value
-    }
+    fun evaluate(expression: AnnotationNumberExpression): Any = expression.value
+
 
     fun evaluate(expression: AnnotationParenthesizedExpression): Any {
         return expression.coreExpression.evaluate(this)

@@ -10,9 +10,8 @@ class BinaryExpressionSyntax(
     private val operatorToken: SyntaxToken,
     private val right: ExpressionSyntax,
 ) : ExpressionSyntax() {
-    override fun annotate(annotator: Annotator): AnnotationExpression {
-        return annotator.annotate(this)
-    }
+    override fun annotate(annotator: Annotator): AnnotationExpression = annotator.annotate(this)
+
 
     override val kind: SyntaxKind
         get() = SyntaxKind.Expression.BinaryExpressionSyntax

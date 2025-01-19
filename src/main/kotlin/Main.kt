@@ -17,7 +17,7 @@ fun main() {
         val code = readlnOrNull()?.trim()
         code?.let {
             val syntaxTree = SyntaxTree.parse(it)
-            printTree(syntaxTree.root.root)
+            printTree(syntaxTree.root)
             if (syntaxTree.diagnosticsBag.diagnostics.isNotEmpty()) {
                 syntaxTree.diagnosticsBag.forEach {
                     println(it.message)

@@ -23,8 +23,7 @@ class AnnotationBinaryExpression(
     override val value: Any
         get() = _left.value
 
-    override fun evaluate(evaluator: Evaluator): Any {
-        return evaluator.evaluate(this)
-    }
+    override fun evaluate(evaluator: Evaluator): Any = evaluator.evaluate(this)
+
 
 }
