@@ -55,4 +55,6 @@ sealed interface SyntaxKind {
         data object AssignmentExpressionSyntax : Expression
     }
 
+    data object  CompilationUnit : SyntaxKind
+
 }

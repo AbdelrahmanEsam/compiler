@@ -7,6 +7,7 @@ import com.moj.najiz.frontend.annotator.Annotator
 import com.moj.najiz.frontend.parser.Parser
 import com.moj.najiz.frontend.nodes.syntax.SyntaxNode
 import com.moj.najiz.frontend.nodes.syntax.SyntaxToken
+import com.moj.najiz.frontend.nodes.syntax.SyntaxTree
 
 fun main() {
     val variables = mutableMapOf<String, Any>()
@@ -15,11 +16,8 @@ fun main() {
 
         val code = readlnOrNull()?.trim()
         code?.let {
-            val lexicalAnalyzer = LexicalAnalyzer()
-            lexicalAnalyzer.setCodeInput(code)
-            val parser = Parser(lexicalAnalyzer)
-            val syntaxTree = parser.parse()
-            printTree(syntaxTree.root)
+            val syntaxTree = SyntaxTree.parse(it)
+            printTree(syntaxTree.root.root)
             if (syntaxTree.diagnosticsBag.diagnostics.isNotEmpty()) {
                 syntaxTree.diagnosticsBag.forEach {
                     println(it.message)

@@ -13,7 +13,10 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
     private val current: SyntaxToken
         get() = peek(0)
 
-    private val diagnostics: Diagnostic.DiagnosticsBag = Diagnostic.DiagnosticsBag()
+   private val diagnostics: Diagnostic.DiagnosticsBag = Diagnostic.DiagnosticsBag()
+
+    val diagnosticsBag :  Diagnostic.DiagnosticsBag
+        get() = diagnostics
 
     private fun getTokens() {
         tokens.clear()
@@ -54,10 +57,10 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
 
     }
 
-    fun parse(): SyntaxTree {
+    fun parseCompilationUnit(): CompilationUnitSyntax {
         val expression = parseExpression()
         val endOfFileToken = match(SyntaxKind.Token.EndOfFileToken)
-        return SyntaxTree(diagnostics, expression, endOfFileToken)
+        return CompilationUnitSyntax(expression, endOfFileToken)
     }
 
     private fun parseExpression() : ExpressionSyntax

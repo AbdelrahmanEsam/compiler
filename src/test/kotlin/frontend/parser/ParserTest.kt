@@ -21,7 +21,7 @@ class ParserTest {
         val parserGetTokens =
             parser::class.declaredMemberFunctions.first { it.name == "getTokens" }.apply { isAccessible = true }
         parserGetTokens.call(parser)
-        val syntaxTree = parser.parse()
+        val syntaxTree = parser.parseCompilationUnit()
 
         // assert that your tree is
         // +
@@ -38,7 +38,7 @@ class ParserTest {
         val parserGetTokens =
             parser::class.declaredMemberFunctions.first { it.name == "getTokens" }.apply { isAccessible = true }
         parserGetTokens.call(parser)
-        val syntaxTree = parser.parse()
+        val syntaxTree = parser.parseCompilationUnit()
 
         // assert that your tree is
         //    =
@@ -56,7 +56,7 @@ class ParserTest {
         val parserGetTokens =
             parser::class.declaredMemberFunctions.first { it.name == "getTokens" }.apply { isAccessible = true }
         parserGetTokens.call(parser)
-        val syntaxTree = parser.parse()
+        val syntaxTree = parser.parseCompilationUnit()
 
         1
         assertTrue(syntaxTree.root is NameExpressionSyntax)
@@ -70,7 +70,7 @@ class ParserTest {
         val parserGetTokens =
             parser::class.declaredMemberFunctions.first { it.name == "getTokens" }.apply { isAccessible = true }
         parserGetTokens.call(parser)
-        val syntaxTree = parser.parse()
+        val syntaxTree = parser.parseCompilationUnit()
 
         // assert that your tree is
         // -
@@ -86,7 +86,7 @@ class ParserTest {
         val parserGetTokens =
             parser::class.declaredMemberFunctions.first { it.name == "getTokens" }.apply { isAccessible = true }
         parserGetTokens.call(parser)
-        val syntaxTree = parser.parse()
+        val syntaxTree = parser.parseCompilationUnit()
         assertTrue(syntaxTree.root is UnaryExpressionSyntax)
         assertTrue(syntaxTree.root.children.firstOrNull()?.kind is SyntaxKind.Token.MathOperatorsToken.MinusToken)
         assertTrue(syntaxTree.root.children[1] is ParenthesizedExpressionSyntax)
@@ -99,7 +99,7 @@ class ParserTest {
         val parserGetTokens =
             parser::class.declaredMemberFunctions.first { it.name == "getTokens" }.apply { isAccessible = true }
         parserGetTokens.call(parser)
-        val syntaxTree = parser.parse()
+        val syntaxTree = parser.parseCompilationUnit()
 
         // assert that your tree is
         // +
@@ -115,7 +115,7 @@ class ParserTest {
         val parserGetTokens =
             parser::class.declaredMemberFunctions.first { it.name == "getTokens" }.apply { isAccessible = true }
         parserGetTokens.call(parser)
-        val syntaxTree = parser.parse()
+        val syntaxTree = parser.parseCompilationUnit()
 
         // assert that your tree is
         // +
@@ -131,7 +131,7 @@ class ParserTest {
         val parserGetTokens =
             parser::class.declaredMemberFunctions.first { it.name == "getTokens" }.apply { isAccessible = true }
         parserGetTokens.call(parser)
-        val syntaxTree = parser.parse()
+        val syntaxTree = parser.parseCompilationUnit()
 
         // assert that your tree is
         // -
