@@ -20,8 +20,8 @@ class Evaluator(private val annotatedScope: AnnotatedGlobalScope? = null) {
 
 
     fun evaluate(expression: AnnotationBinaryExpression): Any {
-        val leftEvaluation = expression.leftExpression.evaluate(this)
         val rightEvaluation = expression.rightExpression.evaluate(this)
+        val leftEvaluation = expression.leftExpression.evaluate(this)
 
 
 

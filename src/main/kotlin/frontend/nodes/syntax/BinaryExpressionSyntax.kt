@@ -1,7 +1,6 @@
 package com.moj.najiz.frontend.nodes.syntax
 
 import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind
-import com.moj.najiz.frontend.nodes.annotation.AnnotationBinaryExpression
 import com.moj.najiz.frontend.nodes.annotation.AnnotationExpression
 import com.moj.najiz.frontend.annotator.Annotator
 

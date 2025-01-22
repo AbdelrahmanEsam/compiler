@@ -8,19 +8,28 @@ class AnnotatedScope(private val parentScope: AnnotatedScope?)  {
     val variables : Map<String,Any> get() = _variables.toMap()
 
     fun tryDeclare(name : String, value : Any) : Boolean {
-        if(_variables.contains(name)) return false
+      //  if(_variables.contains(name)) return false
         _variables[name] = value
         return true
     }
 
     fun tryLookUp(name : String?) : Boolean{
        if( _variables.contains(name)) return true
-      return parentScope?.variables?.contains(name) == true
+        var myParentScope : AnnotatedScope? = parentScope
+        while (myParentScope != null){
+            if(myParentScope.variables.contains(name) == true) return true
+            myParentScope = myParentScope.parentScope
+        }
+      return false
     }
 
     fun get(name : String?) : Any? {
         if(_variables.contains(name)) return _variables[name]!!
-        if(parentScope?.variables?.contains(name) == true)return parentScope.variables[name]!!
+        var myParentScope : AnnotatedScope? = parentScope
+        while (myParentScope != null){
+            if(myParentScope.variables.contains(name) == true) return myParentScope.variables[name]!!
+            myParentScope = myParentScope.parentScope
+        }
         return null
     }
 

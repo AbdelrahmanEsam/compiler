@@ -6,15 +6,9 @@ import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind
 import com.moj.najiz.frontend.nodes.annotation.*
 import com.moj.najiz.frontend.nodes.annotation.scope.AnnotatedGlobalScope
 import com.moj.najiz.frontend.nodes.annotation.scope.AnnotatedScope
-import com.moj.najiz.frontend.nodes.syntax.AssignmentExpressionSyntax
-import com.moj.najiz.frontend.nodes.syntax.BinaryExpressionSyntax
-import com.moj.najiz.frontend.nodes.syntax.CompilationUnitSyntax
-import com.moj.najiz.frontend.nodes.syntax.LiteralExpressionSyntax
-import com.moj.najiz.frontend.nodes.syntax.NameExpressionSyntax
-import com.moj.najiz.frontend.nodes.syntax.NumberExpressionSyntax
-import com.moj.najiz.frontend.nodes.syntax.ParenthesizedExpressionSyntax
-import com.moj.najiz.frontend.nodes.syntax.UnaryExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.*
 import com.moj.najiz.utils.isNumeric
+import java.util.*
 import kotlin.reflect.typeOf
 
 class Annotator(parentScope: AnnotatedScope? = null) {
@@ -27,15 +21,39 @@ class Annotator(parentScope: AnnotatedScope? = null) {
         get() = _diagnostics
 
     companion object {
-        fun annotateGlobalScope(syntax: CompilationUnitSyntax): AnnotatedGlobalScope {
-            DIContainer.getAnnotator().apply {
+        fun annotateGlobalScope(
+            previousGlobalScope: AnnotatedGlobalScope?,
+            syntax: CompilationUnitSyntax
+        ): AnnotatedGlobalScope {
+            val parentScope = createParentScope(previousGlobalScope)
+            DIContainer.getAnnotator(parentScope).apply {
                 return AnnotatedGlobalScope(
-                    null,
+                    previousGlobalScope,
                     this.diagnostics,
                     this.annotatedScope.variables.toMutableMap(),
                     syntax.annotate(this)
                 )
             }
+        }
+
+        fun createParentScope(previousGlobalScope: AnnotatedGlobalScope?): AnnotatedScope? {
+
+            var previousScope = previousGlobalScope
+            var parentScope: AnnotatedScope? = null
+
+            val scopesStack = Stack<AnnotatedGlobalScope>()
+            while (previousScope != null) {
+                scopesStack.push(previousScope)
+                previousScope = previousScope.previousScope
+            }
+
+            while (scopesStack.count() > 0) {
+                previousScope = scopesStack.pop()
+                val scope = AnnotatedScope(parentScope)
+                previousScope.variables.forEach { scope.tryDeclare(it.key, it.value) }
+                parentScope = scope
+            }
+            return parentScope
         }
 
     }
@@ -44,43 +62,67 @@ class Annotator(parentScope: AnnotatedScope? = null) {
     fun annotate(expression: NameExpressionSyntax): AnnotationExpression {
         expression.apply {
             if (!_annotatedScope.tryLookUp(expression.identifier.text)) {
-                diagnostics.reportUndefinedName(expression.identifier.textSpan, expression.identifier.text)
+                _diagnostics.reportUndefinedName(expression.identifier.textSpan, expression.identifier.text)
             }
             val value = _annotatedScope.get(expression.identifier.text)
-            val operandKind = value!!::class.java
-            return AnnotationNameExpression(
-                name = expression.identifier.text!!,
-                type = operandKind
-            )
+            value?.let {
+
+                val operandKind = value::class.java
+                return AnnotationNameExpression(
+                    name = expression.identifier.text!!,
+                    type = operandKind
+                )
+            }
         }
+        return AnnotationLiteralExpression(
+            0
+        )
     }
 
     fun annotate(expression: AssignmentExpressionSyntax): AnnotationExpression {
         expression.apply {
             val name = this.identifier.text
-            return AnnotationAssignmentExpression(name ?: "", expression.expression.annotate(this@Annotator))
+            val annotatedValue = expression.expression.annotate(this@Annotator)
+                if(!annotatedScope.tryLookUp(name)){
+                    annotatedScope.tryDeclare(name ?: "", annotatedValue.value)
+                }
+
+
+
+            return AnnotationAssignmentExpression(name ?: "", annotatedValue)
         }
+
     }
 
+
     fun annotate(expression: BinaryExpressionSyntax): AnnotationExpression {
-        val leftAnnotatedExpression = expression.leftExpression.annotate(this)
         val rightAnnotatedExpression = expression.rightExpression.annotate(this)
-        val actualLeftValue = if (leftAnnotatedExpression is AnnotationNameExpression) {
-            _annotatedScope.get(leftAnnotatedExpression.value.toString())
-        } else {
-            leftAnnotatedExpression.value
-        }
 
         val actualRightValue = if (rightAnnotatedExpression is AnnotationNameExpression) {
             _annotatedScope.get(rightAnnotatedExpression.value.toString())
+        } else if (rightAnnotatedExpression is AnnotationParenthesizedExpression) {
+            _annotatedScope.get(rightAnnotatedExpression.coreExpression.value.toString())
         } else {
             rightAnnotatedExpression.value
         }
+
+
+
+        val leftAnnotatedExpression = expression.leftExpression.annotate(this)
+        val actualLeftValue = if (leftAnnotatedExpression is AnnotationNameExpression) {
+            _annotatedScope.get(leftAnnotatedExpression.value.toString())
+        } else if (rightAnnotatedExpression is AnnotationParenthesizedExpression) {
+            _annotatedScope.get(rightAnnotatedExpression.coreExpression.value.toString())
+            }else {
+            leftAnnotatedExpression.value
+        }
+
         val annotatedBinaryKind = this.annotateBinaryExpressionKind(
             expression.operator.kind,
             actualLeftValue!!,
             actualRightValue!!
         )
+
 
         annotatedBinaryKind?.let {
 
@@ -137,8 +179,8 @@ class Annotator(parentScope: AnnotatedScope? = null) {
     }
 
 
-    fun annotate(expressions: ParenthesizedExpressionSyntax): AnnotationExpression {
-        expressions.apply {
+    fun annotate(expression: ParenthesizedExpressionSyntax): AnnotationExpression {
+        expression.apply {
 
 
             val annotatedExpression = this.coreExpression.annotate(this@Annotator)
@@ -197,6 +239,7 @@ class Annotator(parentScope: AnnotatedScope? = null) {
                 )
 
                 SyntaxKind.Token.MathOperatorsToken.MultiplyToken -> AnnotationBinaryOperator.Companion.annotate(
+
                     syntaxKind = SyntaxKind.Token.MathOperatorsToken.MultiplyToken,
                     leftType = Int,
                     rightType = Int

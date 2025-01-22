@@ -108,7 +108,7 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
         when (current.kind) {
             SyntaxKind.Token.BracketsToken.OpenBracketToken -> {
                 val left = nextToken()
-                val expression = parseBinaryExpression()
+                val expression = parseExpression()
                 val right = match(SyntaxKind.Token.BracketsToken.CloseBracketToken)
                 val parenthesizedExpressionSyntax = ParenthesizedExpressionSyntax(left, expression, right)
                 return parenthesizedExpressionSyntax

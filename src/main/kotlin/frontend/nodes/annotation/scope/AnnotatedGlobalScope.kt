@@ -5,11 +5,14 @@ import com.moj.najiz.frontend.nodes.annotation.AnnotationExpression
 import kotlin.collections.set
 
 class AnnotatedGlobalScope(
-    private val previousScope: AnnotatedGlobalScope? = null,
+    private val _previousScope: AnnotatedGlobalScope? = null,
     private val _diagnosticsBag: Diagnostic.DiagnosticsBag,
     private val _variables : MutableMap<String,Any>,
     private val _expression : AnnotationExpression,
 ) {
+
+     val previousScope : AnnotatedGlobalScope?
+        get() = _previousScope
 
      val variables : Map<String,Any>
         get() = _variables
@@ -27,12 +30,21 @@ class AnnotatedGlobalScope(
 
     fun tryLookUp(name : String?) : Boolean{
         if( _variables.contains(name)) return true
-        return previousScope?.variables?.contains(name) == true
+        var myParentScope : AnnotatedGlobalScope? = _previousScope
+        while (myParentScope != null){
+            if(myParentScope.variables.contains(name) == true) return true
+            myParentScope = myParentScope.previousScope
+        }
+        return false
     }
 
     fun get(name : String?) : Any? {
         if(_variables.contains(name)) return _variables[name]!!
-        if(previousScope?.variables?.contains(name) == true)return previousScope.variables[name]!!
+        var myParentScope : AnnotatedGlobalScope? = _previousScope
+        while (myParentScope != null){
+            if(myParentScope.variables.contains(name) == true) return myParentScope.variables[name]!!
+            myParentScope = myParentScope.previousScope
+        }
         return null
     }
 

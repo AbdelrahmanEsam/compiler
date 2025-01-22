@@ -6,11 +6,15 @@ import com.moj.najiz.frontend.nodes.syntax.SyntaxToken
 import com.moj.najiz.frontend.nodes.syntax.SyntaxTree
 
 fun main() {
-    val compiler = Compiler()
+    var previousCompiler  : Compiler? = null
     while (true) {
 
 
         val code = readlnOrNull()?.trim()
+        if(code == "#reset"){
+            previousCompiler = null
+            continue
+        }
         code?.let {
             val syntaxTree = SyntaxTree.parse(it)
             printTree(syntaxTree.root)
@@ -19,8 +23,8 @@ fun main() {
                     println(it.message)
                 }
             } else {
-                compiler.setSyntaxTree(syntaxTree)
-                val evaluationResult = compiler.compile()
+                previousCompiler = previousCompiler?.continueWith(syntaxTree) ?: Compiler().apply { setSyntaxTree(syntaxTree) }
+                val evaluationResult = previousCompiler.compile()
                 if (evaluationResult.diagnostics.diagnostics.isNotEmpty()) {
                     evaluationResult.diagnostics.diagnostics.forEach {
                         println(it.message)

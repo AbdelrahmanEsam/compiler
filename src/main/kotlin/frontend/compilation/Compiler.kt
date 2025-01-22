@@ -10,6 +10,7 @@ import com.moj.najiz.frontend.nodes.syntax.SyntaxTree
 
 class Compiler() {
     private lateinit  var syntaxTree: SyntaxTree
+    private var previousCompilation : Compiler? = null
 
 
     fun setSyntaxTree(syntaxTree: SyntaxTree)
@@ -17,17 +18,25 @@ class Compiler() {
         this.syntaxTree = syntaxTree
     }
 
-    private lateinit var globalScope: AnnotatedGlobalScope
+
+    constructor(compilation : Compiler , syntaxTree : SyntaxTree) : this() {
+        this.syntaxTree = syntaxTree
+        this.previousCompilation = compilation
+    }
+
+    fun continueWith(syntaxTree : SyntaxTree) : Compiler = Compiler(this,syntaxTree)
+
+     val  globalScope: AnnotatedGlobalScope by lazy{ Annotator.annotateGlobalScope(previousCompilation?.globalScope,syntaxTree.root) }
+
+
 
 
     fun compile(): EvaluationResult {
-        //todo
-       globalScope = Annotator.annotateGlobalScope(syntaxTree.root)
         val evaluatorDiagnostics: Diagnostic.DiagnosticsBag = syntaxTree.diagnosticsBag + globalScope.diagnostics
         if (evaluatorDiagnostics.distinct().isNotEmpty()) return EvaluationResult(evaluatorDiagnostics, null)
         val evaluator = DIContainer.getEvaluator(globalScope)
         val evaluatedResult = globalScope.expression.evaluate(evaluator)
-        return EvaluationResult(Diagnostic.DiagnosticsBag(), evaluatedResult)
+        return EvaluationResult(evaluatorDiagnostics, evaluatedResult)
 
     }
 
