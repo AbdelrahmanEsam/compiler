@@ -103,14 +103,14 @@ class LexicalAnalyzerTest {
     fun inputIsOpenBracketLowerCaseShouldReturnOpenBracketToken()
     {
         lexicalAnalyzer.setCodeInput("(")
-        return assertEquals(SyntaxKind.Token.BracketsToken.OpenBracketToken,lexicalAnalyzer.lex().kind)
+        return assertEquals(SyntaxKind.Token.ParenthesisToken.OpenParenthesisToken,lexicalAnalyzer.lex().kind)
     }
 
     @Test
     fun inputIsCloseBracketLowerCaseShouldReturnCloseBracketToken()
     {
         lexicalAnalyzer.setCodeInput(")")
-        return assertEquals(SyntaxKind.Token.BracketsToken.CloseBracketToken,lexicalAnalyzer.lex().kind)
+        return assertEquals(SyntaxKind.Token.ParenthesisToken.CloseParenthesisToken,lexicalAnalyzer.lex().kind)
     }
 
     @Test

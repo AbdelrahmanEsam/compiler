@@ -39,28 +39,153 @@ class LexicalAnalyzer {
 
     fun lex(): SyntaxToken {
 
-        val spaceToken = spaceToken()
-        spaceToken?.let {
-            return spaceToken
+
+        when (currentChar) {
+            '+' -> {
+                syntaxKind =   SyntaxKind.Token.MathOperatorsToken.PlusToken
+                this.syntaxPosition = position++
+                this.syntaxValue = "+"
+            }
+
+
+
+            '-' -> {
+                syntaxKind =   SyntaxKind.Token.MathOperatorsToken.MinusToken
+                this.syntaxPosition = position++
+                this.syntaxValue = "-"
+            }
+
+
+
+            '*' -> {
+                syntaxKind =   SyntaxKind.Token.MathOperatorsToken.MultiplyToken
+                this.syntaxPosition = position++
+                this.syntaxValue = "*"
+            }
+
+
+
+            '/' -> {
+                syntaxKind =   SyntaxKind.Token.MathOperatorsToken.SlashToken
+                this.syntaxPosition = position++
+                this.syntaxValue = "/"
+            }
+
+
+            '(' -> {
+                syntaxKind =    SyntaxKind.Token.ParenthesisToken.OpenParenthesisToken
+                this.syntaxPosition = position++
+                this.syntaxValue = "("
+            }
+
+
+            ')' -> {
+                syntaxKind = SyntaxKind.Token.ParenthesisToken.CloseParenthesisToken
+                this.syntaxPosition = position++
+                this.syntaxValue = ")"
+            }
+
+            '{' -> {
+                syntaxKind =    SyntaxKind.Token.BracesToken.OpenBracesToken
+                this.syntaxPosition = position++
+                this.syntaxValue = "{"
+            }
+
+
+            '}' -> {
+                syntaxKind = SyntaxKind.Token.BracesToken.CloseBracesToken
+                this.syntaxPosition = position++
+                this.syntaxValue = "}"
+            }
+
+            '!'  if(lookAhead == '=') -> {
+
+                syntaxKind =     SyntaxKind.Token.NotEqualityToken
+                this.syntaxPosition = position.also {
+                    position += 2
+                }
+                this.syntaxValue = "\"!="
+
+            }
+
+            '!' if(lookAhead?.isWhitespace() == true || lookAhead == null || (lookAhead?.isLetter() ==true) ) -> {
+                syntaxKind =   SyntaxKind.Token.BooleanOperatorToken.NotToken
+                this.syntaxPosition = position++
+                this.syntaxValue = "!"
+            }
+
+
+            '|' -> {
+                syntaxKind =   SyntaxKind.Token.BooleanOperatorToken.OrToken
+                this.syntaxPosition = position.also {
+                    position += 2
+                }
+                this.syntaxValue = "||"
+            }
+
+            '&' ->  {
+                syntaxKind =    SyntaxKind.Token.BooleanOperatorToken.AndToken
+                this.syntaxPosition = position.also {
+                    position += 2
+                }
+                this.syntaxValue = "&&"
+            }
+
+
+            '=' if (lookAhead == '=') -> {
+                syntaxKind =   SyntaxKind.Token.EqualityToken
+                this.syntaxPosition = position.also {
+                    position += 2
+                }
+                this.syntaxValue = "=="
+            }
+
+
+
+
+            '=' -> {
+                syntaxKind =   SyntaxKind.Token.AssignmentToken
+                this.syntaxPosition = position++
+                this.syntaxValue = "="
+            }
+
+
+            else -> {
+                val spaceToken = spaceToken()
+                spaceToken?.let {
+                    return spaceToken
+                }
+
+                val isDigit = isDigit()
+                isDigit?.let {
+                    return isDigit
+                }
+
+
+                val isWeightSpace = isWhiteSpace()
+                isWeightSpace?.let {
+                    return isWeightSpace
+                }
+
+                val isLetter = isLetter()
+                isLetter?.let {
+                    return isLetter
+                }
+
+                diagnostics.reportBadCharacter(position = position, char = "currentChar")
+                syntaxKind =   SyntaxKind.Token.BadToken
+                this.syntaxPosition = position++
+                this.syntaxValue = currentChar.toString()
+            }
+
+
         }
-
-        val isDigit = isDigit()
-        isDigit?.let {
-            return isDigit
-        }
-
-
-        val isWeightSpace = isWhiteSpace()
-        isWeightSpace?.let {
-            return isWeightSpace
-        }
-
-        val isLetter = isLetter()
-        isLetter?.let {
-            return isLetter
-        }
-
-        return isSpecialChar()
+        return  SyntaxToken(
+            syntaxKind ?: SyntaxKind.Token.BadToken,
+            syntaxPosition ?: position,
+            syntaxValue,
+            syntaxValue
+        )
 
     }
 
@@ -77,7 +202,7 @@ class LexicalAnalyzer {
     }
 
     private fun isDigit(): SyntaxToken? {
-        return if (currentChar?.isDigit() == true || (currentChar == '.' && code[position + 1].isDigit())) {
+        return if (currentChar?.isDigit() == true || (currentChar == '.' && code.getOrNull(position + 1)?.isDigit() == true)) {
             val start = position
             while (currentChar?.isDigit() == true || currentChar == '.')
                 next()
@@ -144,121 +269,6 @@ class LexicalAnalyzer {
                 actualValue ?: currentToken
             )
         } else null
-    }
-
-    private fun isSpecialChar(): SyntaxToken {
-         when (currentChar) {
-            '+' -> {
-                syntaxKind =   SyntaxKind.Token.MathOperatorsToken.PlusToken
-                this.syntaxPosition = position++
-                this.syntaxValue = "+"
-            }
-
-
-
-            '-' -> {
-                syntaxKind =   SyntaxKind.Token.MathOperatorsToken.MinusToken
-                this.syntaxPosition = position++
-                this.syntaxValue = "-"
-            }
-
-
-
-            '*' -> {
-                syntaxKind =   SyntaxKind.Token.MathOperatorsToken.MultiplyToken
-                this.syntaxPosition = position++
-                this.syntaxValue = "*"
-            }
-
-
-
-            '/' -> {
-                syntaxKind =   SyntaxKind.Token.MathOperatorsToken.SlashToken
-                this.syntaxPosition = position++
-                this.syntaxValue = "/"
-            }
-
-
-            '(' -> {
-                syntaxKind =    SyntaxKind.Token.BracketsToken.OpenBracketToken
-                this.syntaxPosition = position++
-                this.syntaxValue = "("
-            }
-
-
-            ')' -> {
-                syntaxKind = SyntaxKind.Token.BracketsToken.CloseBracketToken
-                this.syntaxPosition = position++
-                this.syntaxValue = ")"
-            }
-
-            '!'  if(lookAhead == '=') -> {
-
-                    syntaxKind =     SyntaxKind.Token.NotEqualityToken
-                    this.syntaxPosition = position.also {
-                        position += 2
-                    }
-                    this.syntaxValue = "\"!="
-
-            }
-
-            '!' if(lookAhead?.isWhitespace() == true || lookAhead == null || (lookAhead?.isLetter() ==true) ) -> {
-                syntaxKind =   SyntaxKind.Token.BooleanOperatorToken.NotToken
-                this.syntaxPosition = position++
-                this.syntaxValue = "!"
-            }
-
-
-            '|' -> {
-                syntaxKind =   SyntaxKind.Token.BooleanOperatorToken.OrToken
-                this.syntaxPosition = position.also {
-                    position += 2
-                }
-                this.syntaxValue = "||"
-            }
-
-            '&' ->  {
-                syntaxKind =    SyntaxKind.Token.BooleanOperatorToken.AndToken
-                this.syntaxPosition = position.also {
-                        position += 2
-                    }
-                this.syntaxValue = "&&"
-            }
-
-
-            '=' if (lookAhead == '=') -> {
-                syntaxKind =   SyntaxKind.Token.EqualityToken
-                this.syntaxPosition = position.also {
-                        position += 2
-                    }
-                this.syntaxValue = "=="
-            }
-
-
-
-
-            '=' -> {
-                syntaxKind =   SyntaxKind.Token.AssignmentToken
-                this.syntaxPosition = position++
-                this.syntaxValue = "="
-            }
-
-
-            else -> {
-                diagnostics.reportBadCharacter(position = position, char = "currentChar")
-                syntaxKind =   SyntaxKind.Token.BadToken
-                this.syntaxPosition = position++
-                this.syntaxValue = currentChar.toString()
-            }
-
-
-        }
-        return  SyntaxToken(
-            syntaxKind ?: SyntaxKind.Token.BadToken,
-            syntaxPosition ?: position,
-            syntaxValue,
-            syntaxValue
-        )
     }
 
 

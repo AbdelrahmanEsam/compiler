@@ -1,8 +1,10 @@
-package com.moj.najiz.frontend.nodes.syntax
+package com.moj.najiz.frontend.nodes.syntax.expressions
 
 import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind
-import com.moj.najiz.frontend.nodes.annotation.AnnotationExpression
+import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationExpression
 import com.moj.najiz.frontend.annotator.Annotator
+import com.moj.najiz.frontend.nodes.syntax.SyntaxNode
+import com.moj.najiz.frontend.nodes.syntax.SyntaxToken
 
 class NumberExpressionSyntax(private val token: SyntaxToken, private val _value: Any?) : ExpressionSyntax() {
 

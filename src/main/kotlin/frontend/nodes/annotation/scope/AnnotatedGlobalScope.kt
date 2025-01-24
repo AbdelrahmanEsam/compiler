@@ -1,14 +1,14 @@
 package com.moj.najiz.frontend.nodes.annotation.scope
 
 import com.moj.najiz.frontend.diagnostics.Diagnostic
-import com.moj.najiz.frontend.nodes.annotation.AnnotationExpression
+import frontend.nodes.annotation.statements.AnnotationStatement
 import kotlin.collections.set
 
 class AnnotatedGlobalScope(
     private val _previousScope: AnnotatedGlobalScope? = null,
     private val _diagnosticsBag: Diagnostic.DiagnosticsBag,
     private val _variables : MutableMap<String,Any>,
-    private val _expression : AnnotationExpression,
+    private val _statement : AnnotationStatement,
 ) {
 
      val previousScope : AnnotatedGlobalScope?
@@ -19,8 +19,8 @@ class AnnotatedGlobalScope(
 
     val diagnostics :Diagnostic.DiagnosticsBag
         get() = _diagnosticsBag
-    val expression :AnnotationExpression
-        get() = _expression
+    val statement :AnnotationStatement
+        get() = _statement
 
     fun tryDeclare(name : String, value : Any) : Boolean {
        // if(_variables.contains(name)) return false

@@ -2,15 +2,17 @@ package com.moj.najiz.frontend.nodes.syntax
 
 import com.moj.najiz.frontend.annotator.Annotator
 import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind
-import com.moj.najiz.frontend.nodes.annotation.AnnotationExpression
+import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationExpression
+import com.moj.najiz.frontend.nodes.syntax.expressions.ExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.statements.StatementSyntax
+import frontend.nodes.annotation.statements.AnnotationStatement
 
-
-class CompilationUnitSyntax(private val _root : ExpressionSyntax,private val _token : SyntaxToken) : SyntaxNode()
+class CompilationUnitSyntax(private val _root : StatementSyntax, private val _token : SyntaxToken) : SyntaxNode()
 {
     override val kind: SyntaxKind
         get() = SyntaxKind.CompilationUnit
 
-    val root : ExpressionSyntax
+    val root : StatementSyntax
         get() = _root
 
     val token : SyntaxToken
@@ -19,6 +21,6 @@ class CompilationUnitSyntax(private val _root : ExpressionSyntax,private val _to
     override val children: List<SyntaxNode>
         get() = listOf(_root)
 
-    fun annotate(annotator: Annotator) : AnnotationExpression = this.root.annotate(annotator)
+    fun annotate(annotator: Annotator) : AnnotationStatement = this.root.annotate(annotator)
 
 }

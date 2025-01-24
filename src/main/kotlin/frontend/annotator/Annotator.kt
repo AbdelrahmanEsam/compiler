@@ -4,10 +4,30 @@ import com.moj.najiz.di.DIContainer
 import com.moj.najiz.frontend.diagnostics.Diagnostic
 import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind
 import com.moj.najiz.frontend.nodes.annotation.*
+import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationAssignmentExpression
+import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationBinaryExpression
+import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationExpression
+import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationLiteralExpression
+import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationNameExpression
+import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationNumberExpression
+import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationParenthesizedExpression
+import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationUnaryExpression
 import com.moj.najiz.frontend.nodes.annotation.scope.AnnotatedGlobalScope
 import com.moj.najiz.frontend.nodes.annotation.scope.AnnotatedScope
-import com.moj.najiz.frontend.nodes.syntax.*
+import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationBlockStatement
+import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationExpressionStatement
+import com.moj.najiz.frontend.nodes.syntax.expressions.AssignmentExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.expressions.BinaryExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.CompilationUnitSyntax
+import com.moj.najiz.frontend.nodes.syntax.expressions.LiteralExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.expressions.NameExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.expressions.NumberExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.expressions.ParenthesizedExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.expressions.UnaryExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.statements.BlockStatementSyntax
+import com.moj.najiz.frontend.nodes.syntax.statements.ExpressionStatementSyntax
 import com.moj.najiz.utils.isNumeric
+import frontend.nodes.annotation.statements.AnnotationStatement
 import java.util.*
 import kotlin.reflect.typeOf
 
@@ -83,9 +103,9 @@ class Annotator(parentScope: AnnotatedScope? = null) {
         expression.apply {
             val name = this.identifier.text
             val annotatedValue = expression.expression.annotate(this@Annotator)
-                if(!annotatedScope.tryLookUp(name)){
-                    annotatedScope.tryDeclare(name ?: "", annotatedValue.value)
-                }
+            if (!annotatedScope.tryLookUp(name)) {
+                annotatedScope.tryDeclare(name ?: "", annotatedValue.value)
+            }
 
 
 
@@ -107,13 +127,12 @@ class Annotator(parentScope: AnnotatedScope? = null) {
         }
 
 
-
         val leftAnnotatedExpression = expression.leftExpression.annotate(this)
         val actualLeftValue = if (leftAnnotatedExpression is AnnotationNameExpression) {
             _annotatedScope.get(leftAnnotatedExpression.value.toString())
         } else if (rightAnnotatedExpression is AnnotationParenthesizedExpression) {
             _annotatedScope.get(rightAnnotatedExpression.coreExpression.value.toString())
-            }else {
+        } else {
             leftAnnotatedExpression.value
         }
 
@@ -190,6 +209,19 @@ class Annotator(parentScope: AnnotatedScope? = null) {
                 closeToken = AnnotationParenthesizedOperatorKind.CloseBracket,
             )
         }
+    }
+
+    fun annotate(statementSyntax: ExpressionStatementSyntax): AnnotationStatement =
+        AnnotationExpressionStatement(statementSyntax.expression.annotate(this))
+
+
+    fun annotate(statementSyntax: BlockStatementSyntax): AnnotationStatement {
+        val annotatedStatements = mutableListOf<AnnotationStatement>()
+
+        statementSyntax.statements.forEach {
+            annotatedStatements.add(it.annotate(this@Annotator))
+        }
+        return AnnotationBlockStatement(annotatedStatements.toTypedArray())
     }
 
 

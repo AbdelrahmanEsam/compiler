@@ -35,7 +35,7 @@ class Compiler() {
         val evaluatorDiagnostics: Diagnostic.DiagnosticsBag = syntaxTree.diagnosticsBag + globalScope.diagnostics
         if (evaluatorDiagnostics.distinct().isNotEmpty()) return EvaluationResult(evaluatorDiagnostics, null)
         val evaluator = DIContainer.getEvaluator(globalScope)
-        val evaluatedResult = globalScope.expression.evaluate(evaluator)
+        val evaluatedResult = globalScope.statement.evaluate(evaluator)
         return EvaluationResult(evaluatorDiagnostics, evaluatedResult)
 
     }

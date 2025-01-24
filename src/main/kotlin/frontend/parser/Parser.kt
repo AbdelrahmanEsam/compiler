@@ -4,7 +4,18 @@ import com.moj.najiz.frontend.diagnostics.Diagnostic
 import com.moj.najiz.frontend.lexicalAnalyzer.LexicalAnalyzer
 import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind
 import com.moj.najiz.frontend.nodes.syntax.*
-import com.moj.najiz.frontend.nodes.syntax.NumberExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.expressions.NumberExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.expressions.AssignmentExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.expressions.BinaryExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.CompilationUnitSyntax
+import com.moj.najiz.frontend.nodes.syntax.expressions.ExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.expressions.LiteralExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.expressions.NameExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.expressions.ParenthesizedExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.expressions.UnaryExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.statements.BlockStatementSyntax
+import com.moj.najiz.frontend.nodes.syntax.statements.ExpressionStatementSyntax
+import com.moj.najiz.frontend.nodes.syntax.statements.StatementSyntax
 
 class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
     private var position = 0
@@ -58,10 +69,32 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
     }
 
     fun parseCompilationUnit(): CompilationUnitSyntax {
-        val expression = parseExpression()
+        val statement = parseStatement()
         val endOfFileToken = match(SyntaxKind.Token.EndOfFileToken)
-        return CompilationUnitSyntax(expression, endOfFileToken)
+        return CompilationUnitSyntax(statement, endOfFileToken)
     }
+
+    private fun parseStatement() : StatementSyntax
+    {
+        if(current.kind == SyntaxKind.Token.BracesToken.OpenBracesToken)
+            return parseBlockStatement()
+
+      return  parseExpressionStatement()
+    }
+
+    private fun parseBlockStatement() : BlockStatementSyntax
+    {
+        val statements = mutableListOf<StatementSyntax>()
+        val openBracesToken = match(SyntaxKind.Token.BracesToken.OpenBracesToken)
+        while (current.kind != SyntaxKind.Token.EndOfFileToken && current.kind != SyntaxKind.Token.BracesToken.CloseBracesToken){
+            statements.add(parseStatement())
+        }
+        val closeBracesToken = match(SyntaxKind.Token.BracesToken.CloseBracesToken)
+
+        return BlockStatementSyntax(openBracesToken ,statements.toTypedArray(),closeBracesToken)
+    }
+
+    private fun parseExpressionStatement() : ExpressionStatementSyntax = ExpressionStatementSyntax(parseExpression())
 
     private fun parseExpression() : ExpressionSyntax
     {
@@ -69,7 +102,7 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
         val  identifierToken = nextToken()
         val syntaxToken =     nextToken()
         val rightExpression = parseBinaryExpression()
-        return  AssignmentExpressionSyntax(identifierToken,syntaxToken,rightExpression)
+        return AssignmentExpressionSyntax(identifierToken, syntaxToken, rightExpression)
         }
 
         return  parseBinaryExpression()
@@ -106,10 +139,10 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
 
     private fun parsePrimaryExpression(): ExpressionSyntax {
         when (current.kind) {
-            SyntaxKind.Token.BracketsToken.OpenBracketToken -> {
+            SyntaxKind.Token.ParenthesisToken.OpenParenthesisToken -> {
                 val left = nextToken()
                 val expression = parseExpression()
-                val right = match(SyntaxKind.Token.BracketsToken.CloseBracketToken)
+                val right = match(SyntaxKind.Token.ParenthesisToken.CloseParenthesisToken)
                 val parenthesizedExpressionSyntax = ParenthesizedExpressionSyntax(left, expression, right)
                 return parenthesizedExpressionSyntax
             }
@@ -124,7 +157,7 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
 
             SyntaxKind.Token.IdentifierToken -> {
                 val identifierToken = nextToken()
-                return  NameExpressionSyntax(identifierToken)
+                return NameExpressionSyntax(identifierToken)
             }
 
             SyntaxKind.Token.NumberToken -> {

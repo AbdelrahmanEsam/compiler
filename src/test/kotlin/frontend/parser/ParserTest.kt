@@ -3,6 +3,14 @@ package frontend.parser
 import com.moj.najiz.frontend.lexicalAnalyzer.LexicalAnalyzer
 import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind
 import com.moj.najiz.frontend.nodes.syntax.*
+import com.moj.najiz.frontend.nodes.syntax.expressions.AssignmentExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.expressions.BinaryExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.expressions.LiteralExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.expressions.NameExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.expressions.NumberExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.expressions.ParenthesizedExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.expressions.UnaryExpressionSyntax
+import com.moj.najiz.frontend.nodes.syntax.statements.ExpressionStatementSyntax
 import com.moj.najiz.frontend.parser.Parser
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -26,7 +34,8 @@ class ParserTest {
         // assert that your tree is
         // +
         //1       \\2
-        assertTrue(syntaxTree.root is BinaryExpressionSyntax)
+        assertTrue(syntaxTree.root is ExpressionStatementSyntax)
+        assertTrue((syntaxTree.root as ExpressionStatementSyntax).expression is BinaryExpressionSyntax)
         assertTrue(syntaxTree.root.children.firstOrNull() is NumberExpressionSyntax)
         assertTrue(syntaxTree.root.children[1].kind is SyntaxKind.Token.MathOperatorsToken.PlusToken)
         assertTrue(syntaxTree.root.children.lastOrNull() is NumberExpressionSyntax)
@@ -43,7 +52,8 @@ class ParserTest {
         // assert that your tree is
         //    =
         //variable    1
-        assertTrue(syntaxTree.root is AssignmentExpressionSyntax)
+        assertTrue(syntaxTree.root is ExpressionStatementSyntax)
+        assertTrue((syntaxTree.root as ExpressionStatementSyntax).expression is AssignmentExpressionSyntax)
         assertTrue(syntaxTree.root.children.firstOrNull() is SyntaxToken)
         assertTrue(syntaxTree.root.children.lastOrNull() is NumberExpressionSyntax)
     }
@@ -58,8 +68,9 @@ class ParserTest {
         parserGetTokens.call(parser)
         val syntaxTree = parser.parseCompilationUnit()
 
-        1
-        assertTrue(syntaxTree.root is NameExpressionSyntax)
+
+        assertTrue(syntaxTree.root is ExpressionStatementSyntax)
+        assertTrue((syntaxTree.root as ExpressionStatementSyntax).expression is NameExpressionSyntax)
         assertTrue(syntaxTree.root.children.firstOrNull() is SyntaxToken)
 
     }
@@ -75,7 +86,8 @@ class ParserTest {
         // assert that your tree is
         // -
         //1
-        assertTrue(syntaxTree.root is UnaryExpressionSyntax)
+        assertTrue(syntaxTree.root is ExpressionStatementSyntax)
+        assertTrue((syntaxTree.root as ExpressionStatementSyntax).expression is UnaryExpressionSyntax)
         assertTrue(syntaxTree.root.children.firstOrNull()?.kind is SyntaxKind.Token.MathOperatorsToken.MinusToken)
         assertTrue(syntaxTree.root.children.lastOrNull() is NumberExpressionSyntax)
     }
@@ -87,7 +99,8 @@ class ParserTest {
             parser::class.declaredMemberFunctions.first { it.name == "getTokens" }.apply { isAccessible = true }
         parserGetTokens.call(parser)
         val syntaxTree = parser.parseCompilationUnit()
-        assertTrue(syntaxTree.root is UnaryExpressionSyntax)
+        assertTrue(syntaxTree.root is ExpressionStatementSyntax)
+        assertTrue((syntaxTree.root as ExpressionStatementSyntax).expression is UnaryExpressionSyntax)
         assertTrue(syntaxTree.root.children.firstOrNull()?.kind is SyntaxKind.Token.MathOperatorsToken.MinusToken)
         assertTrue(syntaxTree.root.children[1] is ParenthesizedExpressionSyntax)
     }
@@ -104,7 +117,8 @@ class ParserTest {
         // assert that your tree is
         // +
         //1
-        assertTrue(syntaxTree.root is UnaryExpressionSyntax)
+        assertTrue(syntaxTree.root is ExpressionStatementSyntax)
+        assertTrue((syntaxTree.root as ExpressionStatementSyntax).expression is UnaryExpressionSyntax)
         assertTrue(syntaxTree.root.children.firstOrNull()?.kind is SyntaxKind.Token.MathOperatorsToken.PlusToken)
         assertTrue(syntaxTree.root.children.lastOrNull() is NumberExpressionSyntax)
     }
@@ -120,7 +134,8 @@ class ParserTest {
         // assert that your tree is
         // +
         //1
-        assertTrue(syntaxTree.root is UnaryExpressionSyntax)
+        assertTrue(syntaxTree.root is ExpressionStatementSyntax)
+        assertTrue((syntaxTree.root as ExpressionStatementSyntax).expression is UnaryExpressionSyntax)
         assertTrue(syntaxTree.root.children.firstOrNull()?.kind is SyntaxKind.Token.BooleanOperatorToken.NotToken)
         assertTrue((syntaxTree.root.children.lastOrNull() is LiteralExpressionSyntax)   && (syntaxTree.root.children.lastOrNull() as LiteralExpressionSyntax).literalToken.kind is SyntaxKind.Token.BooleanToken.TrueToken)
     }
@@ -136,10 +151,11 @@ class ParserTest {
         // assert that your tree is
         // -
         //1
-        assertTrue(syntaxTree.root is ParenthesizedExpressionSyntax)
-        assertTrue(syntaxTree.root.children.firstOrNull()?.kind is SyntaxKind.Token.BracketsToken.OpenBracketToken)
+        assertTrue(syntaxTree.root is ExpressionStatementSyntax)
+        assertTrue((syntaxTree.root as ExpressionStatementSyntax).expression is ParenthesizedExpressionSyntax)
+        assertTrue(syntaxTree.root.children.firstOrNull()?.kind is SyntaxKind.Token.ParenthesisToken.OpenParenthesisToken)
         assertTrue(syntaxTree.root.children[1] is BinaryExpressionSyntax)
-        assertTrue(syntaxTree.root.children.lastOrNull()?.kind is SyntaxKind.Token.BracketsToken.CloseBracketToken)
+        assertTrue(syntaxTree.root.children.lastOrNull()?.kind is SyntaxKind.Token.ParenthesisToken.CloseParenthesisToken)
     }
 
 

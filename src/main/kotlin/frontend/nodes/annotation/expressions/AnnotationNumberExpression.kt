@@ -1,6 +1,7 @@
-package com.moj.najiz.frontend.nodes.annotation
+package com.moj.najiz.frontend.nodes.annotation.expressions
 
 import com.moj.najiz.frontend.expressionEvaluator.Evaluator
+import com.moj.najiz.frontend.nodes.annotation.AnnotationKind
 
 class AnnotationNumberExpression(private val _value: Any) : AnnotationExpression() {
     override val annotationKind: AnnotationKind

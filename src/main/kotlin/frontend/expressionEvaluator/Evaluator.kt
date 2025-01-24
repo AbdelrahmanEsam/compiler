@@ -1,22 +1,26 @@
 package com.moj.najiz.frontend.expressionEvaluator
 
 import com.moj.najiz.frontend.nodes.annotation.*
+import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationAssignmentExpression
+import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationBinaryExpression
+import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationLiteralExpression
+import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationNumberExpression
+import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationParenthesizedExpression
+import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationUnaryExpression
 import com.moj.najiz.frontend.nodes.annotation.scope.AnnotatedGlobalScope
+import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationBlockStatement
+import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationExpressionStatement
 import com.moj.najiz.utils.isNumeric
 
 class Evaluator(private val annotatedScope: AnnotatedGlobalScope? = null) {
 
 
-    fun evaluate(expression: AnnotationLiteralExpression): Any {
-        return expression.value
-    }
+    fun evaluate(expression: AnnotationLiteralExpression): Any  = expression.value
 
     fun evaluate(expression: AnnotationNumberExpression): Any = expression.value
 
 
-    fun evaluate(expression: AnnotationParenthesizedExpression): Any? {
-        return expression.coreExpression.evaluate(this)
-    }
+    fun evaluate(expression: AnnotationParenthesizedExpression): Any?  = expression.coreExpression.evaluate(this)
 
 
     fun evaluate(expression: AnnotationBinaryExpression): Any {
@@ -106,7 +110,7 @@ class Evaluator(private val annotatedScope: AnnotatedGlobalScope? = null) {
         }
     }
 
-    fun evaluate(expression: AnnotationAssignmentExpression,name : String): Any? {
+    fun evaluate(expression: AnnotationAssignmentExpression, name : String): Any? {
         val evaluatedValue = expression.expression.evaluate(this)
         evaluatedValue?.let {
             annotatedScope?.tryDeclare(name , evaluatedValue)
@@ -114,7 +118,13 @@ class Evaluator(private val annotatedScope: AnnotatedGlobalScope? = null) {
         return annotatedScope?.get(name)
     }
 
-    fun evaluate(name : String): Any? {
-        return annotatedScope?.get(name)
+    fun evaluate(name : String): Any? = annotatedScope?.get(name)
+
+    fun evaluate(statement : AnnotationBlockStatement)  =  statement.statements.forEach {
+        it.evaluate(this)
     }
+
+    fun evaluate(statement : AnnotationExpressionStatement) : Any? = statement.expression.evaluate(this)
+
+
 }

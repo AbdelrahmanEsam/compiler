@@ -2,7 +2,7 @@ package com.moj.najiz.frontend.nodes.syntax
 
 import com.moj.najiz.di.DIContainer
 import com.moj.najiz.frontend.diagnostics.Diagnostic
-import com.moj.najiz.frontend.parser.Parser
+import com.moj.najiz.frontend.nodes.syntax.CompilationUnitSyntax
 
 class SyntaxTree {
 

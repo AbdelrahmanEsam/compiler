@@ -30,10 +30,16 @@ sealed interface SyntaxKind {
             data object NotToken : BooleanOperatorToken
         }
 
-        sealed interface BracketsToken : SyntaxKind {
-            //brackets
-            data object OpenBracketToken : Token
-            data object CloseBracketToken : Token
+        sealed interface ParenthesisToken : SyntaxKind {
+            //parenthesis
+            data object OpenParenthesisToken : ParenthesisToken
+            data object CloseParenthesisToken : ParenthesisToken
+        }
+
+        sealed interface BracesToken : SyntaxKind
+        {
+            data object  OpenBracesToken : BracesToken
+            data object  CloseBracesToken : BracesToken
         }
 
 
@@ -53,6 +59,12 @@ sealed interface SyntaxKind {
         data object NumberExpressionSyntax : Expression
         data object NameExpressionSyntax : Expression
         data object AssignmentExpressionSyntax : Expression
+    }
+
+    sealed interface Statement : SyntaxKind
+    {
+        data object BlockStatementStatement : Statement
+        data object ExpressionStatementStatement : Statement
     }
 
     data object  CompilationUnit : SyntaxKind

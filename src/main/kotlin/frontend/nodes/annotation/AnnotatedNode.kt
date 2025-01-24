@@ -1,5 +1,5 @@
 package com.moj.najiz.frontend.nodes.annotation
 
-sealed class AnnotatedNode {
+abstract class AnnotatedNode {
     abstract val annotationKind: AnnotationKind
 }

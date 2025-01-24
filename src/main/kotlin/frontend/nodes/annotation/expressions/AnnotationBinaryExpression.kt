@@ -1,6 +1,8 @@
-package com.moj.najiz.frontend.nodes.annotation
+package com.moj.najiz.frontend.nodes.annotation.expressions
 
 import com.moj.najiz.frontend.expressionEvaluator.Evaluator
+import com.moj.najiz.frontend.nodes.annotation.AnnotationBinaryOperator
+import com.moj.najiz.frontend.nodes.annotation.AnnotationKind
 
 class AnnotationBinaryExpression(
     private val _operatorKind: AnnotationBinaryOperator,
