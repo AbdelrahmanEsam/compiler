@@ -17,5 +17,6 @@ sealed interface AnnotationKind {
     {
         data object  BlockStatement : AnnotationStatementKind
         data object  ExpressionStatement : AnnotationStatementKind
+        data object  VariableDeclarationStatement : AnnotationStatementKind
     }
 }

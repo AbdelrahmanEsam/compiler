@@ -75,6 +75,16 @@ class Diagnostic(private val _textSpan: TextSpan, private val _message: String) 
             report(textSpan, message)
         }
 
+        fun reportValCannotBeReAssigned(textSpan: TextSpan, text: String?) {
+            val message = "val can't be reassigned  $text"
+            report(textSpan, message)
+        }
+
+        fun reportVariableIsAlreadyDeclared(textSpan: TextSpan, name: String?){
+            val message = "variable is already defined with name : $name"
+            report(textSpan, message)
+        }
+
 
 //        fun reportUndefinedParenthesizedOperator(
 //            value: Any,

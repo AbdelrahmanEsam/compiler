@@ -1,10 +1,11 @@
 package com.moj.najiz.frontend.nodes.annotation.expressions
 
+import com.moj.najiz.frontend.VariableSymbol
 import com.moj.najiz.frontend.expressionEvaluator.Evaluator
 import com.moj.najiz.frontend.nodes.annotation.AnnotationKind
 
 class AnnotationAssignmentExpression(
-    private val _name: String,
+    private val _variable: VariableSymbol,
     private val _expression : AnnotationExpression,
 ) : AnnotationExpression() {
 
@@ -17,9 +18,12 @@ class AnnotationAssignmentExpression(
 
 
     override val value: Any
-        get() = _name
+        get() = _variable
+
+     val variable: VariableSymbol
+        get() = _variable
 
     override fun evaluate(evaluator: Evaluator): Any? {
-        return evaluator.evaluate(this,_name)
+        return evaluator.evaluate(this)
     }
 }

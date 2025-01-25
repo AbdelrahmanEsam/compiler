@@ -1,5 +1,6 @@
 package com.moj.najiz.frontend.nodes.annotation.scope
 
+import com.moj.najiz.frontend.VariableSymbol
 import com.moj.najiz.frontend.diagnostics.Diagnostic
 import frontend.nodes.annotation.statements.AnnotationStatement
 import kotlin.collections.set
@@ -7,42 +8,39 @@ import kotlin.collections.set
 class AnnotatedGlobalScope(
     private val _previousScope: AnnotatedGlobalScope? = null,
     private val _diagnosticsBag: Diagnostic.DiagnosticsBag,
-    private val _variables : MutableMap<String,Any>,
-    private val _statement : AnnotationStatement,
+    private val _variables: MutableMap<VariableSymbol, Any>,
+    private val _statement: AnnotationStatement,
 ) {
 
-     val previousScope : AnnotatedGlobalScope?
+    val previousScope: AnnotatedGlobalScope?
         get() = _previousScope
 
-     val variables : Map<String,Any>
+    val variables: Map<VariableSymbol, Any>
         get() = _variables
 
-    val diagnostics :Diagnostic.DiagnosticsBag
+    val diagnostics: Diagnostic.DiagnosticsBag
         get() = _diagnosticsBag
-    val statement :AnnotationStatement
+    val statement: AnnotationStatement
         get() = _statement
 
-    fun tryDeclare(name : String, value : Any) : Boolean {
-       // if(_variables.contains(name)) return false
-        _variables[name] = value
+    fun tryDeclare(variable : VariableSymbol, value : Any) : Boolean {
+         if(_variables.contains(variable)) return false
+        _variables[variable] = value
         return true
     }
 
-    fun tryLookUp(name : String?) : Boolean{
-        if( _variables.contains(name)) return true
-        var myParentScope : AnnotatedGlobalScope? = _previousScope
-        while (myParentScope != null){
-            if(myParentScope.variables.contains(name) == true) return true
-            myParentScope = myParentScope.previousScope
-        }
-        return false
+    fun tryLookUp(name: String?): Any? {
+        var variable = _variables.keys.firstOrNull { it.name == name }
+        if (variable != null) return true
+        var myParentScope: AnnotatedGlobalScope? = _previousScope
+        return myParentScope?.tryLookUp(variable)
     }
 
-    fun get(name : String?) : Any? {
-        if(_variables.contains(name)) return _variables[name]!!
-        var myParentScope : AnnotatedGlobalScope? = _previousScope
-        while (myParentScope != null){
-            if(myParentScope.variables.contains(name) == true) return myParentScope.variables[name]!!
+    fun get(variable: VariableSymbol?): Any? {
+        if (_variables.contains(variable)) return _variables[variable]!!
+        var myParentScope: AnnotatedGlobalScope? = _previousScope
+        while (myParentScope != null) {
+            if (myParentScope.variables.contains(variable) == true) return myParentScope.variables[variable]!!
             myParentScope = myParentScope.previousScope
         }
         return null

@@ -13,14 +13,12 @@ class AssignmentExpressionSyntax(
     private val expressionSyntax: ExpressionSyntax,
 ) : ExpressionSyntax() {
 
-    override fun annotate(annotator: Annotator): AnnotationExpression {
-        return annotator.annotate(this)
-    }
+    override fun annotate(annotator: Annotator): AnnotationExpression = annotator.annotate(this)
 
     override val kind: SyntaxKind
         get() = SyntaxKind.Expression.AssignmentExpressionSyntax
 
-    override val children: List<SyntaxNode> = listOf(identifierToken,expressionSyntax)
+    override val children: List<SyntaxNode> = listOf(identifierToken, expressionSyntax)
 
     val identifier: SyntaxToken
         get() = identifierToken

@@ -42,6 +42,12 @@ sealed interface SyntaxKind {
             data object  CloseBracesToken : BracesToken
         }
 
+        sealed interface VariableDeclaration : SyntaxKind
+        {
+            data object  ValToken : VariableDeclaration
+            data object  VarToken : VariableDeclaration
+        }
+
 
         //special
         data object WhiteSpaceToken : Token
@@ -65,6 +71,7 @@ sealed interface SyntaxKind {
     {
         data object BlockStatementStatement : Statement
         data object ExpressionStatementStatement : Statement
+        data object VariableDeclarationStatementStatement : Statement
     }
 
     data object  CompilationUnit : SyntaxKind

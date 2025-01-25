@@ -1,5 +1,6 @@
 package com.moj.najiz.frontend.expressionEvaluator
 
+import com.moj.najiz.frontend.VariableSymbol
 import com.moj.najiz.frontend.nodes.annotation.*
 import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationAssignmentExpression
 import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationBinaryExpression
@@ -10,17 +11,24 @@ import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationUnaryExpres
 import com.moj.najiz.frontend.nodes.annotation.scope.AnnotatedGlobalScope
 import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationBlockStatement
 import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationExpressionStatement
+import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationDeclarationVariableStatement
 import com.moj.najiz.utils.isNumeric
 
 class Evaluator(private val annotatedScope: AnnotatedGlobalScope? = null) {
 
 
-    fun evaluate(expression: AnnotationLiteralExpression): Any  = expression.value
+    fun evaluate(expression: AnnotationLiteralExpression): Any = expression.value
+    fun evaluate(expression: AnnotationDeclarationVariableStatement) {
+        val value = expression.expression.evaluate(this)
+        value?.let {
+            annotatedScope?.tryDeclare(expression.variable, value)
+        }
+    }
 
     fun evaluate(expression: AnnotationNumberExpression): Any = expression.value
 
 
-    fun evaluate(expression: AnnotationParenthesizedExpression): Any?  = expression.coreExpression.evaluate(this)
+    fun evaluate(expression: AnnotationParenthesizedExpression): Any? = expression.coreExpression.evaluate(this)
 
 
     fun evaluate(expression: AnnotationBinaryExpression): Any {
@@ -41,7 +49,7 @@ class Evaluator(private val annotatedScope: AnnotatedGlobalScope? = null) {
         if (leftEvaluation.toString().isNumeric() && rightEvaluation.toString().isNumeric()) {
             val leftExpressionValue = leftEvaluation.toString().toDouble()
             val rightEvaluationValue = rightEvaluation.toString().toDouble()
-            val expressionResult =  when (expression.operand.annotationKind) {
+            val expressionResult = when (expression.operand.annotationKind) {
                 AnnotationBinaryOperatorKind.Addition -> {
                     leftExpressionValue + rightEvaluationValue
                 }
@@ -59,12 +67,10 @@ class Evaluator(private val annotatedScope: AnnotatedGlobalScope? = null) {
                 }
 
 
-
-
                 else -> throw Exception("unExpected binary operator ${expression.operand}")
             }
 
-            if(leftEvaluation is Int){
+            if (leftEvaluation is Int) {
                 return expressionResult.toInt()
             }
 
@@ -110,21 +116,21 @@ class Evaluator(private val annotatedScope: AnnotatedGlobalScope? = null) {
         }
     }
 
-    fun evaluate(expression: AnnotationAssignmentExpression, name : String): Any? {
+    fun evaluate(expression: AnnotationAssignmentExpression): Any? {
         val evaluatedValue = expression.expression.evaluate(this)
         evaluatedValue?.let {
-            annotatedScope?.tryDeclare(name , evaluatedValue)
+            annotatedScope?.tryDeclare(expression.variable, evaluatedValue)
         }
-        return annotatedScope?.get(name)
+        return annotatedScope?.get(expression.variable)
     }
 
-    fun evaluate(name : String): Any? = annotatedScope?.get(name)
+    fun evaluate(variable: VariableSymbol): Any? = annotatedScope?.get(variable)
 
-    fun evaluate(statement : AnnotationBlockStatement)  =  statement.statements.forEach {
+    fun evaluate(statement: AnnotationBlockStatement) = statement.statements.forEach {
         it.evaluate(this)
     }
 
-    fun evaluate(statement : AnnotationExpressionStatement) : Any? = statement.expression.evaluate(this)
+    fun evaluate(statement: AnnotationExpressionStatement): Any? = statement.expression.evaluate(this)
 
 
 }

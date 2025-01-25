@@ -16,6 +16,7 @@ import com.moj.najiz.frontend.nodes.syntax.expressions.UnaryExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.statements.BlockStatementSyntax
 import com.moj.najiz.frontend.nodes.syntax.statements.ExpressionStatementSyntax
 import com.moj.najiz.frontend.nodes.syntax.statements.StatementSyntax
+import com.moj.najiz.frontend.nodes.syntax.statements.VariableDeclarationStatementSyntax
 
 class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
     private var position = 0
@@ -24,9 +25,9 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
     private val current: SyntaxToken
         get() = peek(0)
 
-   private val diagnostics: Diagnostic.DiagnosticsBag = Diagnostic.DiagnosticsBag()
+    private val diagnostics: Diagnostic.DiagnosticsBag = Diagnostic.DiagnosticsBag()
 
-    val diagnosticsBag :  Diagnostic.DiagnosticsBag
+    val diagnosticsBag: Diagnostic.DiagnosticsBag
         get() = diagnostics
 
     private fun getTokens() {
@@ -74,40 +75,55 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
         return CompilationUnitSyntax(statement, endOfFileToken)
     }
 
-    private fun parseStatement() : StatementSyntax
-    {
-        if(current.kind == SyntaxKind.Token.BracesToken.OpenBracesToken)
-            return parseBlockStatement()
+    private fun parseStatement(): StatementSyntax {
+        return when (current.kind) {
+            SyntaxKind.Token.BracesToken.OpenBracesToken -> {
+                parseBlockStatement()
+            }
 
-      return  parseExpressionStatement()
+            SyntaxKind.Token.VariableDeclaration.ValToken, SyntaxKind.Token.VariableDeclaration.VarToken -> {
+                parseVariableExpression()
+            }
+
+            else -> parseExpressionStatement()
+        }
+
+
     }
 
-    private fun parseBlockStatement() : BlockStatementSyntax
-    {
+    private fun parseVariableExpression(): VariableDeclarationStatementSyntax {
+        val expectedKind =
+            if (current.kind == SyntaxKind.Token.VariableDeclaration.ValToken) SyntaxKind.Token.VariableDeclaration.ValToken else SyntaxKind.Token.VariableDeclaration.VarToken
+        val modifier = match(expectedKind)
+        val identifier = match(SyntaxKind.Token.IdentifierToken)
+        val equality = match(SyntaxKind.Token.AssignmentToken)
+        val expression = parseExpression()
+        return VariableDeclarationStatementSyntax(modifier,identifier,equality,expression)
+    }
+
+    private fun parseBlockStatement(): BlockStatementSyntax {
         val statements = mutableListOf<StatementSyntax>()
         val openBracesToken = match(SyntaxKind.Token.BracesToken.OpenBracesToken)
-        while (current.kind != SyntaxKind.Token.EndOfFileToken && current.kind != SyntaxKind.Token.BracesToken.CloseBracesToken){
+        while (current.kind != SyntaxKind.Token.EndOfFileToken && current.kind != SyntaxKind.Token.BracesToken.CloseBracesToken) {
             statements.add(parseStatement())
         }
         val closeBracesToken = match(SyntaxKind.Token.BracesToken.CloseBracesToken)
 
-        return BlockStatementSyntax(openBracesToken ,statements.toTypedArray(),closeBracesToken)
+        return BlockStatementSyntax(openBracesToken, statements.toTypedArray(), closeBracesToken)
     }
 
-    private fun parseExpressionStatement() : ExpressionStatementSyntax = ExpressionStatementSyntax(parseExpression())
+    private fun parseExpressionStatement(): ExpressionStatementSyntax = ExpressionStatementSyntax(parseExpression())
 
-    private fun parseExpression() : ExpressionSyntax
-    {
-        if(peek(0).kind == SyntaxKind.Token.IdentifierToken && peek(1).kind == SyntaxKind.Token.AssignmentToken){
-        val  identifierToken = nextToken()
-        val syntaxToken =     nextToken()
-        val rightExpression = parseBinaryExpression()
-        return AssignmentExpressionSyntax(identifierToken, syntaxToken, rightExpression)
+    private fun parseExpression(): ExpressionSyntax {
+        if (peek(0).kind == SyntaxKind.Token.IdentifierToken && peek(1).kind == SyntaxKind.Token.AssignmentToken) {
+            val identifierToken = nextToken()
+            val syntaxToken = nextToken()
+            val rightExpression = parseBinaryExpression()
+            return AssignmentExpressionSyntax(identifierToken, syntaxToken, rightExpression)
         }
 
-        return  parseBinaryExpression()
+        return parseBinaryExpression()
     }
-
 
 
     private fun parseBinaryExpression(parentPriority: Int = 0): ExpressionSyntax {
@@ -162,7 +178,7 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
 
             SyntaxKind.Token.NumberToken -> {
                 val numberToken = match(SyntaxKind.Token.NumberToken)
-                return  NumberExpressionSyntax(numberToken)
+                return NumberExpressionSyntax(numberToken)
             }
 
             else -> {

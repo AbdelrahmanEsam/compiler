@@ -1,8 +1,10 @@
 package com.moj.najiz.frontend.annotator
 
 import com.moj.najiz.di.DIContainer
+import com.moj.najiz.frontend.VariableSymbol
 import com.moj.najiz.frontend.diagnostics.Diagnostic
 import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind
+import com.moj.najiz.frontend.lexicalAnalyzer.SyntaxKind.Token.VariableDeclaration
 import com.moj.najiz.frontend.nodes.annotation.*
 import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationAssignmentExpression
 import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationBinaryExpression
@@ -15,6 +17,7 @@ import com.moj.najiz.frontend.nodes.annotation.expressions.AnnotationUnaryExpres
 import com.moj.najiz.frontend.nodes.annotation.scope.AnnotatedGlobalScope
 import com.moj.najiz.frontend.nodes.annotation.scope.AnnotatedScope
 import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationBlockStatement
+import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationDeclarationVariableStatement
 import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationExpressionStatement
 import com.moj.najiz.frontend.nodes.syntax.expressions.AssignmentExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.expressions.BinaryExpressionSyntax
@@ -26,6 +29,8 @@ import com.moj.najiz.frontend.nodes.syntax.expressions.ParenthesizedExpressionSy
 import com.moj.najiz.frontend.nodes.syntax.expressions.UnaryExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.statements.BlockStatementSyntax
 import com.moj.najiz.frontend.nodes.syntax.statements.ExpressionStatementSyntax
+import com.moj.najiz.frontend.nodes.syntax.statements.VariableDeclarationStatementSyntax
+import com.moj.najiz.utils.getKType
 import com.moj.najiz.utils.isNumeric
 import frontend.nodes.annotation.statements.AnnotationStatement
 import java.util.*
@@ -81,15 +86,18 @@ class Annotator(parentScope: AnnotatedScope? = null) {
 
     fun annotate(expression: NameExpressionSyntax): AnnotationExpression {
         expression.apply {
+
             if (!_annotatedScope.tryLookUp(expression.identifier.text)) {
                 _diagnostics.reportUndefinedName(expression.identifier.textSpan, expression.identifier.text)
+                return AnnotationLiteralExpression(0)
             }
-            val value = _annotatedScope.get(expression.identifier.text)
+
+            val value = _annotatedScope.get(expression.identifier.text!!)
             value?.let {
 
                 val operandKind = value::class.java
                 return AnnotationNameExpression(
-                    name = expression.identifier.text!!,
+                    value,
                     type = operandKind
                 )
             }
@@ -103,13 +111,19 @@ class Annotator(parentScope: AnnotatedScope? = null) {
         expression.apply {
             val name = this.identifier.text
             val annotatedValue = expression.expression.annotate(this@Annotator)
+            val variable = VariableSymbol(name ?: "", getKType(annotatedValue), false)
             if (!annotatedScope.tryLookUp(name)) {
-                annotatedScope.tryDeclare(name ?: "", annotatedValue.value)
+                annotatedScope.tryDeclare(variable, annotatedValue.value)
+            }
+
+            if(annotatedScope.get(name ?: "")?.isReadOnly == true){
+                _diagnostics.reportValCannotBeReAssigned(expression.operator.textSpan,name)
+                return AnnotationLiteralExpression(0)
             }
 
 
 
-            return AnnotationAssignmentExpression(name ?: "", annotatedValue)
+            return AnnotationAssignmentExpression(variable, annotatedValue)
         }
 
     }
@@ -213,6 +227,26 @@ class Annotator(parentScope: AnnotatedScope? = null) {
 
     fun annotate(statementSyntax: ExpressionStatementSyntax): AnnotationStatement =
         AnnotationExpressionStatement(statementSyntax.expression.annotate(this))
+
+
+    fun annotate(statement: VariableDeclarationStatementSyntax): AnnotationStatement {
+        val name = statement.identifier.text
+        val isReadOnly = statement.modifier.kind == VariableDeclaration.ValToken
+        val initializer = statement.expression.annotate(this)
+
+
+
+        if (!_annotatedScope.tryLookUp(name)) {
+            _diagnostics.reportVariableIsAlreadyDeclared(statement.identifier.textSpan, name)
+        }
+
+        val variable = VariableSymbol(name!!, getKType(initializer), isReadOnly)
+
+        return AnnotationDeclarationVariableStatement(
+            variable,
+            initializer
+        )
+    }
 
 
     fun annotate(statementSyntax: BlockStatementSyntax): AnnotationStatement {
