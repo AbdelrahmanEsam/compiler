@@ -6,17 +6,31 @@ sealed interface SyntaxKind {
     sealed interface Token : SyntaxKind {
 
         data object NumberToken : Token
-        data object EqualityToken : Token
         data object AssignmentToken : Token
-        data object NotEqualityToken : Token
 
         //mathematical
-        sealed interface MathOperatorsToken : SyntaxKind {
-            data object PlusToken : MathOperatorsToken
-            data object MinusToken : MathOperatorsToken
-            data object MultiplyToken : MathOperatorsToken
-            data object SlashToken : MathOperatorsToken
+        sealed interface Math : SyntaxKind{
+
+
+            sealed interface OperatorsTokens : Math {
+                data object PlusToken : OperatorsTokens
+                data object MinusToken : OperatorsTokens
+                data object MultiplyToken : OperatorsTokens
+                data object SlashToken : OperatorsTokens
+            }
+
+            sealed interface EqualityTokens : Math {
+                data object EqualityToken : EqualityTokens
+                data object NotEqualityToken : EqualityTokens
+                data object GreaterThanToken : EqualityTokens
+                data object GreaterThanOrEqualToken : EqualityTokens
+                data object LessThanToken : EqualityTokens
+                data object LessThanOrEqualToken : EqualityTokens
+            }
         }
+
+
+
 
         //booleans
         sealed interface BooleanToken : SyntaxKind {

@@ -45,6 +45,22 @@ class Evaluator(private val annotatedScope: AnnotatedGlobalScope? = null) {
             return leftEvaluation != rightEvaluation
         }
 
+        if (expression.operand.annotationKind == AnnotationBinaryOperatorKind.GreaterThan) {
+            return leftEvaluation.toString().toInt() > rightEvaluation.toString().toInt()
+        }
+
+        if (expression.operand.annotationKind == AnnotationBinaryOperatorKind.GreaterThanOrEqual) {
+            return leftEvaluation.toString().toInt() >= rightEvaluation.toString().toInt()
+        }
+
+        if (expression.operand.annotationKind == AnnotationBinaryOperatorKind.LessThan) {
+            return leftEvaluation.toString().toInt() < rightEvaluation.toString().toInt()
+        }
+
+        if (expression.operand.annotationKind == AnnotationBinaryOperatorKind.LessThanOrEqual) {
+            return leftEvaluation.toString().toInt() <= rightEvaluation.toString().toInt()
+        }
+
 
         if (leftEvaluation.toString().isNumeric() && rightEvaluation.toString().isNumeric()) {
             val leftExpressionValue = leftEvaluation.toString().toDouble()
@@ -66,9 +82,9 @@ class Evaluator(private val annotatedScope: AnnotatedGlobalScope? = null) {
                     leftExpressionValue * rightEvaluationValue
                 }
 
-
                 else -> throw Exception("unExpected binary operator ${expression.operand}")
             }
+
 
             if (leftEvaluation is Int) {
                 return expressionResult.toInt()

@@ -264,13 +264,13 @@ class Annotator(parentScope: AnnotatedScope? = null) {
     ): AnnotationUnaryOperator? {
 
         return when (operandKind) {
-            SyntaxKind.Token.MathOperatorsToken.PlusToken -> AnnotationUnaryOperator.Companion.annotate(
-                syntaxKind = SyntaxKind.Token.MathOperatorsToken.PlusToken,
+            SyntaxKind.Token.Math.OperatorsTokens.PlusToken -> AnnotationUnaryOperator.Companion.annotate(
+                syntaxKind = SyntaxKind.Token.Math.OperatorsTokens.PlusToken,
                 operandKind = typeOf<Int>()
             )
 
-            SyntaxKind.Token.MathOperatorsToken.MinusToken -> AnnotationUnaryOperator.Companion.annotate(
-                syntaxKind = SyntaxKind.Token.MathOperatorsToken.MinusToken,
+            SyntaxKind.Token.Math.OperatorsTokens.MinusToken -> AnnotationUnaryOperator.Companion.annotate(
+                syntaxKind = SyntaxKind.Token.Math.OperatorsTokens.MinusToken,
                 operandKind = typeOf<Int>()
             )
 
@@ -292,39 +292,66 @@ class Annotator(parentScope: AnnotatedScope? = null) {
     ): AnnotationBinaryOperator? {
         if (leftValue.toString().isNumeric() && rightValue.toString().isNumeric()) {
             return when (operandKind) {
-                SyntaxKind.Token.MathOperatorsToken.PlusToken -> AnnotationBinaryOperator.Companion.annotate(
-                    syntaxKind = SyntaxKind.Token.MathOperatorsToken.PlusToken,
+                SyntaxKind.Token.Math.OperatorsTokens.PlusToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.Math.OperatorsTokens.PlusToken,
                     leftType = Int,
                     rightType = Int
                 )
 
-                SyntaxKind.Token.MathOperatorsToken.MinusToken -> AnnotationBinaryOperator.Companion.annotate(
-                    syntaxKind = SyntaxKind.Token.MathOperatorsToken.MinusToken,
+                SyntaxKind.Token.Math.OperatorsTokens.MinusToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.Math.OperatorsTokens.MinusToken,
                     leftType = Int,
                     rightType = Int
                 )
 
-                SyntaxKind.Token.MathOperatorsToken.MultiplyToken -> AnnotationBinaryOperator.Companion.annotate(
+                SyntaxKind.Token.Math.OperatorsTokens.MultiplyToken -> AnnotationBinaryOperator.Companion.annotate(
 
-                    syntaxKind = SyntaxKind.Token.MathOperatorsToken.MultiplyToken,
+                    syntaxKind = SyntaxKind.Token.Math.OperatorsTokens.MultiplyToken,
                     leftType = Int,
                     rightType = Int
                 )
 
-                SyntaxKind.Token.MathOperatorsToken.SlashToken -> AnnotationBinaryOperator.Companion.annotate(
-                    syntaxKind = SyntaxKind.Token.MathOperatorsToken.SlashToken,
+                SyntaxKind.Token.Math.OperatorsTokens.SlashToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.Math.OperatorsTokens.SlashToken,
                     leftType = Int,
                     rightType = Int
                 )
 
-                SyntaxKind.Token.EqualityToken -> AnnotationBinaryOperator.Companion.annotate(
-                    syntaxKind = SyntaxKind.Token.EqualityToken,
+                SyntaxKind.Token.Math.EqualityTokens.EqualityToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.Math.EqualityTokens.EqualityToken,
                     leftType = Int,
                     rightType = Int,
                 )
 
-                SyntaxKind.Token.NotEqualityToken -> AnnotationBinaryOperator.Companion.annotate(
-                    syntaxKind = SyntaxKind.Token.NotEqualityToken,
+                SyntaxKind.Token.Math.EqualityTokens.NotEqualityToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.Math.EqualityTokens.NotEqualityToken,
+                    leftType = Int,
+                    rightType = Int,
+                )
+
+
+                SyntaxKind.Token.Math.EqualityTokens.GreaterThanToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.Math.EqualityTokens.GreaterThanToken,
+                    leftType = Int,
+                    rightType = Int,
+                )
+
+                SyntaxKind.Token.Math.EqualityTokens.GreaterThanOrEqualToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.Math.EqualityTokens.GreaterThanOrEqualToken,
+                    leftType = Int,
+                    rightType = Int,
+                )
+
+
+                SyntaxKind.Token.Math.EqualityTokens.LessThanToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.Math.EqualityTokens.LessThanToken,
+                    leftType = Int,
+                    rightType = Int,
+                )
+
+
+                SyntaxKind.Token.Math.EqualityTokens.LessThanOrEqualToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.Math.EqualityTokens.LessThanOrEqualToken,
                     leftType = Int,
                     rightType = Int,
                 )
@@ -347,14 +374,14 @@ class Annotator(parentScope: AnnotatedScope? = null) {
                     rightType = Boolean
                 )
 
-                SyntaxKind.Token.EqualityToken -> AnnotationBinaryOperator.Companion.annotate(
-                    syntaxKind = SyntaxKind.Token.EqualityToken,
+                SyntaxKind.Token.Math.EqualityTokens.EqualityToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.Math.EqualityTokens.EqualityToken,
                     leftType = Boolean,
                     rightType = Boolean
                 )
 
-                SyntaxKind.Token.NotEqualityToken -> AnnotationBinaryOperator.Companion.annotate(
-                    syntaxKind = SyntaxKind.Token.NotEqualityToken,
+                SyntaxKind.Token.Math.EqualityTokens.NotEqualityToken -> AnnotationBinaryOperator.Companion.annotate(
+                    syntaxKind = SyntaxKind.Token.Math.EqualityTokens.NotEqualityToken,
                     leftType = Boolean,
                     rightType = Boolean
                 )

@@ -19,12 +19,12 @@ class AnnotationUnaryOperator(
                     _operandKind = typeOf<Boolean>()
                 ),
                 AnnotationUnaryOperator(
-                    _syntaxKind = SyntaxKind.Token.MathOperatorsToken.PlusToken,
+                    _syntaxKind = SyntaxKind.Token.Math.OperatorsTokens.PlusToken,
                     _annotationKind = AnnotationUnaryOperatorKind.Identity,
                     _operandKind = typeOf<Int>()
                 ),
                 AnnotationUnaryOperator(
-                    _syntaxKind = SyntaxKind.Token.MathOperatorsToken.MinusToken,
+                    _syntaxKind = SyntaxKind.Token.Math.OperatorsTokens.MinusToken,
                     _annotationKind = AnnotationUnaryOperatorKind.Negation,
                     _operandKind = typeOf<Int>()
                 ),

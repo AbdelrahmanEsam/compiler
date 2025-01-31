@@ -37,7 +37,7 @@ class ParserTest {
         assertTrue(syntaxTree.root is ExpressionStatementSyntax)
         assertTrue((syntaxTree.root as ExpressionStatementSyntax).expression is BinaryExpressionSyntax)
         assertTrue(syntaxTree.root.children.firstOrNull() is NumberExpressionSyntax)
-        assertTrue(syntaxTree.root.children[1].kind is SyntaxKind.Token.MathOperatorsToken.PlusToken)
+        assertTrue(syntaxTree.root.children[1].kind is SyntaxKind.Token.Math.OperatorsTokens.PlusToken)
         assertTrue(syntaxTree.root.children.lastOrNull() is NumberExpressionSyntax)
     }
 
@@ -88,7 +88,7 @@ class ParserTest {
         //1
         assertTrue(syntaxTree.root is ExpressionStatementSyntax)
         assertTrue((syntaxTree.root as ExpressionStatementSyntax).expression is UnaryExpressionSyntax)
-        assertTrue(syntaxTree.root.children.firstOrNull()?.kind is SyntaxKind.Token.MathOperatorsToken.MinusToken)
+        assertTrue(syntaxTree.root.children.firstOrNull()?.kind is SyntaxKind.Token.Math.OperatorsTokens.MinusToken)
         assertTrue(syntaxTree.root.children.lastOrNull() is NumberExpressionSyntax)
     }
 
@@ -101,7 +101,7 @@ class ParserTest {
         val syntaxTree = parser.parseCompilationUnit()
         assertTrue(syntaxTree.root is ExpressionStatementSyntax)
         assertTrue((syntaxTree.root as ExpressionStatementSyntax).expression is UnaryExpressionSyntax)
-        assertTrue(syntaxTree.root.children.firstOrNull()?.kind is SyntaxKind.Token.MathOperatorsToken.MinusToken)
+        assertTrue(syntaxTree.root.children.firstOrNull()?.kind is SyntaxKind.Token.Math.OperatorsTokens.MinusToken)
         assertTrue(syntaxTree.root.children[1] is ParenthesizedExpressionSyntax)
     }
 
@@ -119,7 +119,7 @@ class ParserTest {
         //1
         assertTrue(syntaxTree.root is ExpressionStatementSyntax)
         assertTrue((syntaxTree.root as ExpressionStatementSyntax).expression is UnaryExpressionSyntax)
-        assertTrue(syntaxTree.root.children.firstOrNull()?.kind is SyntaxKind.Token.MathOperatorsToken.PlusToken)
+        assertTrue(syntaxTree.root.children.firstOrNull()?.kind is SyntaxKind.Token.Math.OperatorsTokens.PlusToken)
         assertTrue(syntaxTree.root.children.lastOrNull() is NumberExpressionSyntax)
     }
 

@@ -73,14 +73,14 @@ class LexicalAnalyzerTest {
     fun inputIsPlusLowerCaseShouldReturnPlusToken()
     {
         lexicalAnalyzer.setCodeInput("+")
-        return assertEquals(SyntaxKind.Token.MathOperatorsToken.PlusToken,lexicalAnalyzer.lex().kind)
+        return assertEquals(SyntaxKind.Token.Math.OperatorsTokens.PlusToken,lexicalAnalyzer.lex().kind)
     }
 
     @Test
     fun inputIsMinusLowerCaseShouldReturnMinusToken()
     {
         lexicalAnalyzer.setCodeInput("-")
-        return assertEquals(SyntaxKind.Token.MathOperatorsToken.MinusToken,lexicalAnalyzer.lex().kind)
+        return assertEquals(SyntaxKind.Token.Math.OperatorsTokens.MinusToken,lexicalAnalyzer.lex().kind)
     }
 
 
@@ -88,7 +88,7 @@ class LexicalAnalyzerTest {
     fun inputIsMultiplyLowerCaseShouldReturnMultiplyToken()
     {
         lexicalAnalyzer.setCodeInput("*")
-        return assertEquals(SyntaxKind.Token.MathOperatorsToken.MultiplyToken,lexicalAnalyzer.lex().kind)
+        return assertEquals(SyntaxKind.Token.Math.OperatorsTokens.MultiplyToken,lexicalAnalyzer.lex().kind)
     }
 
 
@@ -96,7 +96,7 @@ class LexicalAnalyzerTest {
     fun inputIsDivideLowerCaseShouldReturnSlashToken()
     {
         lexicalAnalyzer.setCodeInput("/")
-        return assertEquals(SyntaxKind.Token.MathOperatorsToken.SlashToken,lexicalAnalyzer.lex().kind)
+        return assertEquals(SyntaxKind.Token.Math.OperatorsTokens.SlashToken,lexicalAnalyzer.lex().kind)
     }
 
     @Test
@@ -124,7 +124,7 @@ class LexicalAnalyzerTest {
     fun inputIsNotEqualSymbolLowerCaseShouldReturnNotEqualToken()
     {
         lexicalAnalyzer.setCodeInput("!=")
-        return assertEquals(SyntaxKind.Token.NotEqualityToken,lexicalAnalyzer.lex().kind)
+        return assertEquals(SyntaxKind.Token.Math.EqualityTokens.NotEqualityToken,lexicalAnalyzer.lex().kind)
     }
 
     @Test
@@ -154,7 +154,7 @@ class LexicalAnalyzerTest {
     fun inputIsEqualitySymbolLowerCaseShouldReturnEqualityToken()
     {
         lexicalAnalyzer.setCodeInput("==")
-        return assertEquals(SyntaxKind.Token.EqualityToken,lexicalAnalyzer.lex().kind)
+        return assertEquals(SyntaxKind.Token.Math.EqualityTokens.EqualityToken,lexicalAnalyzer.lex().kind)
     }
 
     @Test

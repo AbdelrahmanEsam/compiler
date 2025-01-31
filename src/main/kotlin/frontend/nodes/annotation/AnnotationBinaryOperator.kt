@@ -16,21 +16,21 @@ class AnnotationBinaryOperator(
         private val binaryOperators =
             listOf(
                 AnnotationBinaryOperator(
-                    _syntaxKind = SyntaxKind.Token.MathOperatorsToken.PlusToken,
+                    _syntaxKind = SyntaxKind.Token.Math.OperatorsTokens.PlusToken,
                     _annotationKind = AnnotationBinaryOperatorKind.Addition,
                     _operandKind = typeOf<Int>(),
                     _resultKind = typeOf<Int>(),
                     _type = listOf(Int),
                 ),
                 AnnotationBinaryOperator(
-                    _syntaxKind = SyntaxKind.Token.MathOperatorsToken.MinusToken,
+                    _syntaxKind = SyntaxKind.Token.Math.OperatorsTokens.MinusToken,
                     _annotationKind = AnnotationBinaryOperatorKind.Subtraction,
                     _operandKind = typeOf<Int>(),
                     _resultKind = typeOf<Int>(),
                     _type = listOf(Int),
                 ),
                 AnnotationBinaryOperator(
-                    _syntaxKind = SyntaxKind.Token.MathOperatorsToken.SlashToken,
+                    _syntaxKind = SyntaxKind.Token.Math.OperatorsTokens.SlashToken,
                     _annotationKind = AnnotationBinaryOperatorKind.Division,
                     _operandKind = typeOf<Int>(),
                     _resultKind = typeOf<Int>(),
@@ -38,7 +38,7 @@ class AnnotationBinaryOperator(
                 ),
 
                 AnnotationBinaryOperator(
-                    _syntaxKind = SyntaxKind.Token.MathOperatorsToken.MultiplyToken,
+                    _syntaxKind = SyntaxKind.Token.Math.OperatorsTokens.MultiplyToken,
                     _annotationKind = AnnotationBinaryOperatorKind.Multiplication,
                     _operandKind = typeOf<Int>(),
                     _resultKind = typeOf<Int>(),
@@ -46,7 +46,39 @@ class AnnotationBinaryOperator(
                 ),
 
                 AnnotationBinaryOperator(
-                    _syntaxKind = SyntaxKind.Token.EqualityToken,
+                    _syntaxKind = SyntaxKind.Token.Math.EqualityTokens.GreaterThanToken,
+                    _annotationKind = AnnotationBinaryOperatorKind.GreaterThan,
+                    _operandKind = typeOf<Int>(),
+                    _resultKind = true,
+                    _type = listOf(Int),
+                ),
+
+                AnnotationBinaryOperator(
+                    _syntaxKind = SyntaxKind.Token.Math.EqualityTokens.GreaterThanOrEqualToken,
+                    _annotationKind = AnnotationBinaryOperatorKind.GreaterThanOrEqual,
+                    _operandKind = typeOf<Int>(),
+                    _resultKind = true,
+                    _type = listOf(Int),
+                ),
+
+                AnnotationBinaryOperator(
+                    _syntaxKind = SyntaxKind.Token.Math.EqualityTokens.LessThanToken,
+                    _annotationKind = AnnotationBinaryOperatorKind.LessThan,
+                    _operandKind = typeOf<Int>(),
+                    _resultKind = true,
+                    _type = listOf(Int),
+                ),
+
+                AnnotationBinaryOperator(
+                    _syntaxKind = SyntaxKind.Token.Math.EqualityTokens.LessThanOrEqualToken,
+                    _annotationKind = AnnotationBinaryOperatorKind.LessThanOrEqual,
+                    _operandKind = typeOf<Int>(),
+                    _resultKind = true,
+                    _type = listOf(Int),
+                ),
+
+                AnnotationBinaryOperator(
+                    _syntaxKind = SyntaxKind.Token.Math.EqualityTokens.EqualityToken,
                     _annotationKind = AnnotationBinaryOperatorKind.Equality,
                     _operandKind = typeOf<Int>(),
                     _resultKind = true,
@@ -54,7 +86,7 @@ class AnnotationBinaryOperator(
                 ),
 
                 AnnotationBinaryOperator(
-                    _syntaxKind = SyntaxKind.Token.NotEqualityToken,
+                    _syntaxKind = SyntaxKind.Token.Math.EqualityTokens.NotEqualityToken,
                     _annotationKind = AnnotationBinaryOperatorKind.NotEquality,
                     _operandKind = typeOf<Int>(),
                     _resultKind = true,

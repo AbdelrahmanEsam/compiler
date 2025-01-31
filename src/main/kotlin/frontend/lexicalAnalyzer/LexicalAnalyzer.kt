@@ -42,7 +42,7 @@ class LexicalAnalyzer {
 
         when (currentChar) {
             '+' -> {
-                syntaxKind =   SyntaxKind.Token.MathOperatorsToken.PlusToken
+                syntaxKind =   SyntaxKind.Token.Math.OperatorsTokens.PlusToken
                 this.syntaxPosition = position++
                 this.syntaxValue = "+"
             }
@@ -50,7 +50,7 @@ class LexicalAnalyzer {
 
 
             '-' -> {
-                syntaxKind =   SyntaxKind.Token.MathOperatorsToken.MinusToken
+                syntaxKind =   SyntaxKind.Token.Math.OperatorsTokens.MinusToken
                 this.syntaxPosition = position++
                 this.syntaxValue = "-"
             }
@@ -58,7 +58,7 @@ class LexicalAnalyzer {
 
 
             '*' -> {
-                syntaxKind =   SyntaxKind.Token.MathOperatorsToken.MultiplyToken
+                syntaxKind =   SyntaxKind.Token.Math.OperatorsTokens.MultiplyToken
                 this.syntaxPosition = position++
                 this.syntaxValue = "*"
             }
@@ -66,7 +66,7 @@ class LexicalAnalyzer {
 
 
             '/' -> {
-                syntaxKind =   SyntaxKind.Token.MathOperatorsToken.SlashToken
+                syntaxKind =   SyntaxKind.Token.Math.OperatorsTokens.SlashToken
                 this.syntaxPosition = position++
                 this.syntaxValue = "/"
             }
@@ -100,7 +100,7 @@ class LexicalAnalyzer {
 
             '!'  if(lookAhead == '=') -> {
 
-                syntaxKind =     SyntaxKind.Token.NotEqualityToken
+                syntaxKind =     SyntaxKind.Token.Math.EqualityTokens.NotEqualityToken
                 this.syntaxPosition = position.also {
                     position += 2
                 }
@@ -123,6 +123,42 @@ class LexicalAnalyzer {
                 this.syntaxValue = "||"
             }
 
+            '>' if(lookAhead == '=') -> {
+                syntaxKind =     SyntaxKind.Token.Math.EqualityTokens.GreaterThanOrEqualToken
+                this.syntaxPosition = position.also {
+                    position += 2
+                }
+                this.syntaxValue = "\">="
+            }
+
+            '>'  -> {
+                syntaxKind =     SyntaxKind.Token.Math.EqualityTokens.GreaterThanToken
+                this.syntaxPosition = position.also {
+                    position++
+                }
+                this.syntaxValue = "\">"
+            }
+
+            '<' if(lookAhead == '=')  -> {
+                syntaxKind =     SyntaxKind.Token.Math.EqualityTokens.LessThanOrEqualToken
+                this.syntaxPosition = position.also {
+                    position += 2
+                }
+                this.syntaxValue = "\"<="
+            }
+
+
+            '<'  -> {
+                syntaxKind =     SyntaxKind.Token.Math.EqualityTokens.LessThanToken
+                this.syntaxPosition = position.also {
+                    position++
+                }
+                this.syntaxValue = "\"<"
+            }
+
+
+
+
             '&' ->  {
                 syntaxKind =    SyntaxKind.Token.BooleanOperatorToken.AndToken
                 this.syntaxPosition = position.also {
@@ -133,7 +169,7 @@ class LexicalAnalyzer {
 
 
             '=' if (lookAhead == '=') -> {
-                syntaxKind =   SyntaxKind.Token.EqualityToken
+                syntaxKind =   SyntaxKind.Token.Math.EqualityTokens.EqualityToken
                 this.syntaxPosition = position.also {
                     position += 2
                 }

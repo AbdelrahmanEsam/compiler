@@ -1,6 +1,6 @@
 package com.moj.najiz.frontend.nodes.annotation
 
-interface AnnotationBinaryOperatorKind {
+sealed interface AnnotationBinaryOperatorKind {
     data object Addition : AnnotationBinaryOperatorKind
     data object Subtraction : AnnotationBinaryOperatorKind
     data object Division : AnnotationBinaryOperatorKind
@@ -9,4 +9,8 @@ interface AnnotationBinaryOperatorKind {
     data object LogicalOr : AnnotationBinaryOperatorKind
     data object Equality : AnnotationBinaryOperatorKind
     data object NotEquality : AnnotationBinaryOperatorKind
+    data object GreaterThan : AnnotationBinaryOperatorKind
+    data object GreaterThanOrEqual : AnnotationBinaryOperatorKind
+    data object LessThan : AnnotationBinaryOperatorKind
+    data object LessThanOrEqual : AnnotationBinaryOperatorKind
 }
