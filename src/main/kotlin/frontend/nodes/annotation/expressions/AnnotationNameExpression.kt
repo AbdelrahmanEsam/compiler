@@ -12,11 +12,8 @@ class AnnotationNameExpression(
     override val annotationKind: AnnotationKind
         get() = AnnotationKind.AnnotationExpressionKind.AnnotationNameExpression
 
-    val variableType: Any
-        get() = type
 
-
-    override val value: Any
+    override val value: VariableSymbol
         get() = variable
 
     override fun evaluate(evaluator: Evaluator): Any? {

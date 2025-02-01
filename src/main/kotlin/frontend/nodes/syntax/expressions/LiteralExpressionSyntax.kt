@@ -6,14 +6,13 @@ import com.moj.najiz.frontend.annotator.Annotator
 import com.moj.najiz.frontend.nodes.syntax.SyntaxNode
 import com.moj.najiz.frontend.nodes.syntax.SyntaxToken
 
-class LiteralExpressionSyntax(private val token: SyntaxToken, private val _value: Any?) : ExpressionSyntax() {
+class LiteralExpressionSyntax(private val _token: SyntaxToken, private val _value: Any?) : ExpressionSyntax() {
 
     constructor(number: SyntaxToken) : this(number, number.actualValue)
 
-    val literalToken: SyntaxToken
-        get() {
-            return token
-        }
+    override val token: SyntaxToken
+        get() = _token
+
 
     override fun annotate(annotator: Annotator): AnnotationExpression {
         return annotator.annotate(this)
@@ -26,6 +25,6 @@ class LiteralExpressionSyntax(private val token: SyntaxToken, private val _value
         get() = _value
 
 
-    override val children: List<SyntaxNode> = listOf(token)
+    override val children: List<SyntaxNode> = listOf(_token)
 
 }

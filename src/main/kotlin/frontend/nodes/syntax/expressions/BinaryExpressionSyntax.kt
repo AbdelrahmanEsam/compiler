@@ -25,6 +25,6 @@ class BinaryExpressionSyntax(
     val rightExpression: ExpressionSyntax
         get() = right
 
-    val operator: SyntaxToken
+    override val token: SyntaxToken
         get() = operatorToken
 }

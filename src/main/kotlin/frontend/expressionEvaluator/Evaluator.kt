@@ -12,6 +12,7 @@ import com.moj.najiz.frontend.nodes.annotation.scope.AnnotatedGlobalScope
 import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationBlockStatement
 import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationExpressionStatement
 import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationDeclarationVariableStatement
+import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationIfStatement
 import com.moj.najiz.utils.isNumeric
 
 class Evaluator(private val annotatedScope: AnnotatedGlobalScope? = null) {
@@ -149,4 +150,12 @@ class Evaluator(private val annotatedScope: AnnotatedGlobalScope? = null) {
     fun evaluate(statement: AnnotationExpressionStatement): Any? = statement.expression.evaluate(this)
 
 
+    fun evaluate(statement: AnnotationIfStatement): Any? {
+
+        if (statement.ifCondition.evaluate(this) == true) {
+            return statement.thenStatement.evaluate(this)
+        }
+
+        return statement.elseStatement?.evaluate(this)
+    }
 }

@@ -22,6 +22,6 @@ class UnaryExpressionSyntax(
     val operandExpression: ExpressionSyntax
         get() = operand
 
-    val operator: SyntaxToken
+  override  val token: SyntaxToken
         get() = operatorToken
 }

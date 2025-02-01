@@ -169,7 +169,7 @@ class LexicalAnalyzer {
 
 
             '=' if (lookAhead == '=') -> {
-                syntaxKind =   SyntaxKind.Token.Math.EqualityTokens.EqualityToken
+                syntaxKind = SyntaxKind.Token.Math.EqualityTokens.EqualityToken
                 this.syntaxPosition = position.also {
                     position += 2
                 }
@@ -180,7 +180,7 @@ class LexicalAnalyzer {
 
 
             '=' -> {
-                syntaxKind =   SyntaxKind.Token.AssignmentToken
+                syntaxKind = SyntaxKind.Token.AssignmentToken
                 this.syntaxPosition = position++
                 this.syntaxValue = "="
             }

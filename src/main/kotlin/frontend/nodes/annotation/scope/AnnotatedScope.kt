@@ -32,7 +32,6 @@ class AnnotatedScope(private val parentScope: AnnotatedScope?) {
 
     fun get(name: String): VariableSymbol? {
         var variable = _variables.keys.firstOrNull { it.name == name }
-        if (variable != null) return null
         var myParentScope: AnnotatedScope? = parentScope
         while (myParentScope != null) {
             variable = myParentScope.variables.keys.firstOrNull { it.name == name }

@@ -18,6 +18,9 @@ class ParenthesizedExpressionSyntax(
         }
 
     override val children: List<SyntaxNode> = listOf(openToken, expression, closeToken)
+    override val token: SyntaxToken
+        get() = expression.token
+
     override fun annotate(annotator: Annotator): AnnotationExpression {
         return annotator.annotate(this)
     }

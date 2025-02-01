@@ -62,6 +62,12 @@ sealed interface SyntaxKind {
             data object  VarToken : VariableDeclaration
         }
 
+        sealed interface StatementKeywords : SyntaxKind
+        {
+            data object  IfToken : StatementKeywords
+            data object  ElseToken : StatementKeywords
+        }
+
 
         //special
         data object WhiteSpaceToken : Token
@@ -86,6 +92,7 @@ sealed interface SyntaxKind {
         data object BlockStatementStatement : Statement
         data object ExpressionStatementStatement : Statement
         data object VariableDeclarationStatementStatement : Statement
+        data object IfStatement : Statement
     }
 
     data object  CompilationUnit : SyntaxKind

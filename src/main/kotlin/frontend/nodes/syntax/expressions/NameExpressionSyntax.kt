@@ -9,6 +9,9 @@ import com.moj.najiz.frontend.nodes.syntax.SyntaxToken
 class NameExpressionSyntax(
     private val identifierToken: SyntaxToken,
 ) : ExpressionSyntax() {
+    override val token: SyntaxToken
+        get() = identifierToken
+
     override fun annotate(annotator: Annotator): AnnotationExpression  = annotator.annotate(this)
 
     override val kind: SyntaxKind

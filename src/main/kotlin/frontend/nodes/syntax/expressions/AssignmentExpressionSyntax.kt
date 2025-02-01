@@ -20,7 +20,7 @@ class AssignmentExpressionSyntax(
 
     override val children: List<SyntaxNode> = listOf(identifierToken, expressionSyntax)
 
-    val identifier: SyntaxToken
+    override val token: SyntaxToken
         get() = identifierToken
 
     val operator: SyntaxToken

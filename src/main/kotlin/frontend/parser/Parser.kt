@@ -14,7 +14,9 @@ import com.moj.najiz.frontend.nodes.syntax.expressions.NameExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.expressions.ParenthesizedExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.expressions.UnaryExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.statements.BlockStatementSyntax
+import com.moj.najiz.frontend.nodes.syntax.statements.ElseClauseSyntax
 import com.moj.najiz.frontend.nodes.syntax.statements.ExpressionStatementSyntax
+import com.moj.najiz.frontend.nodes.syntax.statements.IfStatementSyntax
 import com.moj.najiz.frontend.nodes.syntax.statements.StatementSyntax
 import com.moj.najiz.frontend.nodes.syntax.statements.VariableDeclarationStatementSyntax
 
@@ -85,11 +87,37 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
                 parseVariableExpression()
             }
 
+            SyntaxKind.Token.StatementKeywords.IfToken -> {
+                parseIfStatement()
+            }
+
+
             else -> parseExpressionStatement()
         }
 
 
     }
+
+    private fun parseIfStatement(): IfStatementSyntax {
+        match(SyntaxKind.Token.StatementKeywords.IfToken)
+        val condition = parseExpression()
+        val thenStatement = parseStatement()
+        val elseClause = parseElseClause()
+
+        return IfStatementSyntax(condition, thenStatement, elseClause)
+    }
+
+    private fun parseElseClause(): ElseClauseSyntax? {
+
+        if (current.kind != SyntaxKind.Token.StatementKeywords.ElseToken) return null
+
+        val keyword = nextToken()
+        val statement = parseStatement()
+
+        return ElseClauseSyntax(keyword, statement)
+
+    }
+
 
     private fun parseVariableExpression(): VariableDeclarationStatementSyntax {
         val expectedKind =
@@ -98,7 +126,7 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
         val identifier = match(SyntaxKind.Token.IdentifierToken)
         val equality = match(SyntaxKind.Token.AssignmentToken)
         val expression = parseExpression()
-        return VariableDeclarationStatementSyntax(modifier,identifier,equality,expression)
+        return VariableDeclarationStatementSyntax(modifier, identifier, equality, expression)
     }
 
     private fun parseBlockStatement(): BlockStatementSyntax {

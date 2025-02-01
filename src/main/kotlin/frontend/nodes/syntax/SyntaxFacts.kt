@@ -9,6 +9,8 @@ fun String.getKeywordKind(): SyntaxKind {
         "false" -> SyntaxKind.Token.BooleanToken.FalseToken
         "val" -> SyntaxKind.Token.VariableDeclaration.ValToken
         "var" -> SyntaxKind.Token.VariableDeclaration.VarToken
+        "if" -> SyntaxKind.Token.StatementKeywords.IfToken
+        "else" -> SyntaxKind.Token.StatementKeywords.ElseToken
 
         else -> {
             SyntaxKind.Token.IdentifierToken
