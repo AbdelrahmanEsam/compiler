@@ -20,9 +20,11 @@ import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationBlockStateme
 import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationDeclarationVariableStatement
 import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationExpressionStatement
 import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationIfStatement
+import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationWhileStatement
 import com.moj.najiz.frontend.nodes.syntax.expressions.AssignmentExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.expressions.BinaryExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.CompilationUnitSyntax
+import com.moj.najiz.frontend.nodes.syntax.SyntaxToken
 import com.moj.najiz.frontend.nodes.syntax.expressions.LiteralExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.expressions.NameExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.expressions.NumberExpressionSyntax
@@ -30,8 +32,11 @@ import com.moj.najiz.frontend.nodes.syntax.expressions.ParenthesizedExpressionSy
 import com.moj.najiz.frontend.nodes.syntax.expressions.UnaryExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.statements.BlockStatementSyntax
 import com.moj.najiz.frontend.nodes.syntax.statements.ExpressionStatementSyntax
+import com.moj.najiz.frontend.nodes.syntax.statements.ForStatementSyntax
 import com.moj.najiz.frontend.nodes.syntax.statements.IfStatementSyntax
+import com.moj.najiz.frontend.nodes.syntax.statements.WhileStatementSyntax
 import com.moj.najiz.frontend.nodes.syntax.statements.VariableDeclarationStatementSyntax
+import com.moj.najiz.frontend.nodes.syntax.toBoolean
 import com.moj.najiz.utils.getKType
 import com.moj.najiz.utils.isNumeric
 import frontend.nodes.annotation.statements.AnnotationStatement
@@ -96,11 +101,11 @@ class Annotator(parentScope: AnnotatedScope? = null) {
 
             val value = _annotatedScope.get(expression.identifier.text!!)
             value?.let {
-
                 val operandKind = value::class.java
                 return AnnotationNameExpression(
-                    value,
-                    type = operandKind
+                    value.first,
+                    type = operandKind,
+                    value.second
                 )
             }
         }
@@ -114,12 +119,12 @@ class Annotator(parentScope: AnnotatedScope? = null) {
             val name = this.token.text
             val annotatedValue = expression.expression.annotate(this@Annotator)
             val variable = VariableSymbol(name ?: "", getKType(annotatedValue), false)
-            if (!annotatedScope.tryLookUp(name)) {
-                annotatedScope.tryDeclare(variable, annotatedValue.value)
-            }
 
-            if(annotatedScope.get(name ?: "")?.isReadOnly == true){
-                _diagnostics.reportValCannotBeReAssigned(expression.operator.textSpan,name)
+            annotatedScope.tryDeclare(variable, annotatedValue.value)
+
+
+            if (annotatedScope.get(name ?: "")?.first?.isReadOnly == true) {
+                _diagnostics.reportValCannotBeReAssigned(expression.operator.textSpan, name)
                 return AnnotationLiteralExpression(0)
             }
 
@@ -135,9 +140,9 @@ class Annotator(parentScope: AnnotatedScope? = null) {
         val rightAnnotatedExpression = expression.rightExpression.annotate(this)
 
         val actualRightValue = if (rightAnnotatedExpression is AnnotationNameExpression) {
-            _annotatedScope.get(rightAnnotatedExpression.value.toString())
+            rightAnnotatedExpression.value
         } else if (rightAnnotatedExpression is AnnotationParenthesizedExpression) {
-            _annotatedScope.get(rightAnnotatedExpression.coreExpression.value.toString())
+            _annotatedScope.get(rightAnnotatedExpression.coreExpression.value.toString())?.second
         } else {
             rightAnnotatedExpression.value
         }
@@ -145,9 +150,9 @@ class Annotator(parentScope: AnnotatedScope? = null) {
 
         val leftAnnotatedExpression = expression.leftExpression.annotate(this)
         val actualLeftValue = if (leftAnnotatedExpression is AnnotationNameExpression) {
-            _annotatedScope.get(leftAnnotatedExpression.value.name)
+            leftAnnotatedExpression.value
         } else if (rightAnnotatedExpression is AnnotationParenthesizedExpression) {
-            _annotatedScope.get(rightAnnotatedExpression.coreExpression.value.toString())
+            _annotatedScope.get(rightAnnotatedExpression.coreExpression.value.toString())?.second
         } else {
             leftAnnotatedExpression.value
         }
@@ -158,6 +163,32 @@ class Annotator(parentScope: AnnotatedScope? = null) {
             actualRightValue!!
         )
 
+        val expressionValue = when(expression.token.kind){
+            is SyntaxKind.Token.Math.EqualityTokens.EqualityToken -> actualLeftValue == actualRightValue
+            is SyntaxKind.Token.Math.EqualityTokens.NotEqualityToken -> actualLeftValue != actualRightValue
+            is SyntaxKind.Token.Math.EqualityTokens.LessThanToken -> actualLeftValue.toString().toInt() < actualRightValue.toString().toInt()
+            is SyntaxKind.Token.Math.EqualityTokens.LessThanOrEqualToken ->  actualLeftValue.toString().toInt() <= actualRightValue.toString().toInt()
+            is SyntaxKind.Token.Math.EqualityTokens.GreaterThanToken ->  actualLeftValue.toString().toInt() > actualRightValue.toString().toInt()
+            is SyntaxKind.Token.Math.EqualityTokens.GreaterThanOrEqualToken ->  actualLeftValue.toString().toInt() >= actualRightValue.toString().toInt()
+            is SyntaxKind.Token.Math.OperatorsTokens.PlusToken ->  actualLeftValue.toString().toInt() + actualRightValue.toString().toInt()
+            is SyntaxKind.Token.Math.OperatorsTokens.MinusToken ->  actualLeftValue.toString().toInt() - actualRightValue.toString().toInt()
+            is SyntaxKind.Token.Math.OperatorsTokens.MultiplyToken ->  actualLeftValue.toString().toInt() * actualRightValue.toString().toInt()
+            is SyntaxKind.Token.Math.OperatorsTokens.SlashToken ->  actualLeftValue.toString().toInt() / actualRightValue.toString().toInt()
+            is SyntaxKind.Token.BooleanOperatorToken.AndToken ->  actualLeftValue.toString().toBoolean() && actualLeftValue.toString().toBoolean()
+            is SyntaxKind.Token.BooleanOperatorToken.OrToken ->  actualLeftValue.toString().toBoolean() || actualLeftValue.toString().toBoolean()
+            else -> {
+                _diagnostics.reportUndefinedBinaryOperator(
+                    textSpan = expression.token.textSpan,
+                    operator = expression.token.text,
+                    rightExpressionType = leftAnnotatedExpression.value::class,
+                    leftExpressionType = rightAnnotatedExpression.value::class
+                )
+                return AnnotationLiteralExpression(0)
+            }
+
+
+
+        }
 
         annotatedBinaryKind?.let {
 
@@ -165,6 +196,7 @@ class Annotator(parentScope: AnnotatedScope? = null) {
                 _left = leftAnnotatedExpression,
                 _right = rightAnnotatedExpression,
                 _operatorKind = annotatedBinaryKind,
+                _value = expressionValue,
             )
 
         }
@@ -253,25 +285,62 @@ class Annotator(parentScope: AnnotatedScope? = null) {
 
     fun annotate(statementSyntax: BlockStatementSyntax): AnnotationStatement {
         val annotatedStatements = mutableListOf<AnnotationStatement>()
+        _annotatedScope = DIContainer.getAnnotatedScope(_annotatedScope)
 
         statementSyntax.statements.forEach {
             annotatedStatements.add(it.annotate(this@Annotator))
         }
+
+        _annotatedScope = _annotatedScope.parentScope!!
         return AnnotationBlockStatement(annotatedStatements.toTypedArray())
     }
 
-    fun annotate(ifStatement : IfStatementSyntax) : AnnotationStatement {
+    fun annotate(ifStatement: IfStatementSyntax): AnnotationStatement {
         ifStatement.apply {
 
-        val conditionResult = condition.annotate(this@Annotator)
-        if(getKType(conditionResult) != typeOf<Boolean>()){
-            diagnostics.reportUnExpectedError(condition.token.textSpan,
-                condition.token.text.toString()
-            )
+            val conditionResult = condition.annotate(this@Annotator)
+            if (getKType(conditionResult) != typeOf<Boolean>()) {
+                diagnostics.reportUnExpectedError(
+                    condition.token.textSpan,
+                    condition.token.text.toString()
+                )
+            }
+            val annotatedStatement = thenStatement.annotate(this@Annotator)
+            val elseStatement = elseClause?.elseStatement?.annotate(this@Annotator)
+            return AnnotationIfStatement(conditionResult, annotatedStatement, elseStatement)
         }
-        val annotatedStatement = thenStatement.annotate(this@Annotator)
-        val elseStatement = elseClause?.elseStatement?.annotate(this@Annotator)
-            return AnnotationIfStatement(conditionResult,annotatedStatement,elseStatement)
+    }
+
+    fun annotate(whileStatement: WhileStatementSyntax): AnnotationStatement {
+        whileStatement.apply {
+            val conditionResult = condition.annotate(this@Annotator)
+            if (getKType(conditionResult) != typeOf<Boolean>()) {
+                diagnostics.reportUnExpectedError(
+                    condition.token.textSpan,
+                    condition.token.text.toString()
+                )
+            }
+            val annotatedStatement = thenStatement.annotate(this@Annotator)
+
+            return AnnotationWhileStatement(conditionResult, arrayOf(annotatedStatement))
+        }
+    }
+
+
+    fun annotate(forStatement: ForStatementSyntax): AnnotationStatement {
+        forStatement.apply {
+            val annotatedVariableDeclaration = variableDeclaration.annotate(this@Annotator)
+            val conditionResult = condition.annotate(this@Annotator)
+            if (getKType(conditionResult) != typeOf<Boolean>()) {
+                diagnostics.reportUnExpectedError(
+                    condition.token.textSpan,
+                    condition.token.text.toString()
+                )
+            }
+            val annotatedTrailingStatement = trailingStatement.annotate(this@Annotator)
+            val annotatedStatement = thenStatement.annotate(this@Annotator)
+
+            return AnnotationWhileStatement(_headStatement = arrayOf(annotatedVariableDeclaration),_condition = conditionResult, _thenStatements =  arrayOf(annotatedStatement , annotatedTrailingStatement))
         }
     }
 

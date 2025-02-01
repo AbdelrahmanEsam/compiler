@@ -16,7 +16,9 @@ import com.moj.najiz.frontend.nodes.syntax.expressions.UnaryExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.statements.BlockStatementSyntax
 import com.moj.najiz.frontend.nodes.syntax.statements.ElseClauseSyntax
 import com.moj.najiz.frontend.nodes.syntax.statements.ExpressionStatementSyntax
+import com.moj.najiz.frontend.nodes.syntax.statements.ForStatementSyntax
 import com.moj.najiz.frontend.nodes.syntax.statements.IfStatementSyntax
+import com.moj.najiz.frontend.nodes.syntax.statements.WhileStatementSyntax
 import com.moj.najiz.frontend.nodes.syntax.statements.StatementSyntax
 import com.moj.najiz.frontend.nodes.syntax.statements.VariableDeclarationStatementSyntax
 
@@ -79,17 +81,17 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
 
     private fun parseStatement(): StatementSyntax {
         return when (current.kind) {
-            SyntaxKind.Token.BracesToken.OpenBracesToken -> {
-                parseBlockStatement()
-            }
+            SyntaxKind.Token.BracesToken.OpenBracesToken -> parseBlockStatement()
 
-            SyntaxKind.Token.VariableDeclaration.ValToken, SyntaxKind.Token.VariableDeclaration.VarToken -> {
-                parseVariableExpression()
-            }
 
-            SyntaxKind.Token.StatementKeywords.IfToken -> {
-                parseIfStatement()
-            }
+            SyntaxKind.Token.VariableDeclaration.ValToken, SyntaxKind.Token.VariableDeclaration.VarToken -> parseVariableExpression()
+
+
+            SyntaxKind.Token.StatementKeywords.IfToken -> parseIfStatement()
+
+
+            SyntaxKind.Token.StatementKeywords.WhileToken -> parseWhileStatement()
+            SyntaxKind.Token.StatementKeywords.ForToken -> parseForStatement()
 
 
             else -> parseExpressionStatement()
@@ -105,6 +107,30 @@ class Parser(private val lexicalAnalyzer: LexicalAnalyzer) {
         val elseClause = parseElseClause()
 
         return IfStatementSyntax(condition, thenStatement, elseClause)
+    }
+
+    private fun parseWhileStatement(): WhileStatementSyntax {
+        match(SyntaxKind.Token.StatementKeywords.WhileToken)
+        val condition = parseExpression()
+        val thenStatement = parseStatement()
+        return WhileStatementSyntax(condition, thenStatement)
+    }
+
+
+    private fun parseForStatement(): ForStatementSyntax {
+        match(SyntaxKind.Token.StatementKeywords.ForToken)
+        nextToken() // here we need to ignore our parenthesized
+        val variableDeclaration = parseExpression()
+        nextToken()
+        match(SyntaxKind.Token.SemiColon)
+        val condition = parseExpression()
+        nextToken()
+        match(SyntaxKind.Token.SemiColon)
+        val trailingStatement = parseStatement()
+        nextToken() // here we need to ignore our parenthesized
+        val thenStatement = parseStatement()
+
+        return ForStatementSyntax(variableDeclaration, condition, trailingStatement, thenStatement)
     }
 
     private fun parseElseClause(): ElseClauseSyntax? {

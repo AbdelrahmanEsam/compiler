@@ -8,6 +8,7 @@ class AnnotationBinaryExpression(
     private val _operatorKind: AnnotationBinaryOperator,
     private val _left: AnnotationExpression,
     private val _right: AnnotationExpression,
+    private val _value : Any?
 ) : AnnotationExpression() {
 
     override val annotationKind: AnnotationKind
@@ -23,7 +24,7 @@ class AnnotationBinaryExpression(
         get() = _left
 
     override val value: Any
-        get() = _left.value
+        get() = _value ?: _left.value
 
     override fun evaluate(evaluator: Evaluator): Any? = evaluator.evaluate(this)
 

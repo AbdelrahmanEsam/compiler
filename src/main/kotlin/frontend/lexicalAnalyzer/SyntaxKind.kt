@@ -7,6 +7,7 @@ sealed interface SyntaxKind {
 
         data object NumberToken : Token
         data object AssignmentToken : Token
+        data object SemiColon : Token
 
         //mathematical
         sealed interface Math : SyntaxKind{
@@ -66,6 +67,8 @@ sealed interface SyntaxKind {
         {
             data object  IfToken : StatementKeywords
             data object  ElseToken : StatementKeywords
+            data object  WhileToken : StatementKeywords
+            data object  ForToken : StatementKeywords
         }
 
 
@@ -93,6 +96,8 @@ sealed interface SyntaxKind {
         data object ExpressionStatementStatement : Statement
         data object VariableDeclarationStatementStatement : Statement
         data object IfStatement : Statement
+        data object WhileStatement : Statement
+        data object ForStatement : Statement
     }
 
     data object  CompilationUnit : SyntaxKind

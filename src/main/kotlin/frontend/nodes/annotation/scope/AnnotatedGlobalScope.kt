@@ -24,7 +24,7 @@ class AnnotatedGlobalScope(
         get() = _statement
 
     fun tryDeclare(variable : VariableSymbol, value : Any) : Boolean {
-         if(_variables.contains(variable)) return false
+        // if(_variables.contains(variable)) return false
         _variables[variable] = value
         return true
     }
@@ -36,11 +36,11 @@ class AnnotatedGlobalScope(
         return myParentScope?.tryLookUp(variable)
     }
 
-    fun get(variable: VariableSymbol?): Any? {
-        if (_variables.contains(variable)) return _variables[variable]!!
+    fun get(variable: VariableSymbol?): Pair<VariableSymbol, Any>? {
+        if (_variables.contains(variable)) return Pair(variable!!,_variables[variable]!!)
         var myParentScope: AnnotatedGlobalScope? = _previousScope
         while (myParentScope != null) {
-            if (myParentScope.variables.contains(variable) == true) return myParentScope.variables[variable]!!
+            if (myParentScope.variables.contains(variable) == true) return Pair(variable!!,myParentScope.variables[variable]!!)
             myParentScope = myParentScope.previousScope
         }
         return null

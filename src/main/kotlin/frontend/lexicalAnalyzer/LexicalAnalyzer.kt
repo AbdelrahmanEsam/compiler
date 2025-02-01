@@ -176,13 +176,17 @@ class LexicalAnalyzer {
                 this.syntaxValue = "=="
             }
 
-
-
-
             '=' -> {
                 syntaxKind = SyntaxKind.Token.AssignmentToken
                 this.syntaxPosition = position++
                 this.syntaxValue = "="
+            }
+
+
+            ';' -> {
+                syntaxKind = SyntaxKind.Token.SemiColon
+                this.syntaxPosition = position++
+                this.syntaxValue = ";"
             }
 
 

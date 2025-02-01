@@ -11,6 +11,8 @@ fun String.getKeywordKind(): SyntaxKind {
         "var" -> SyntaxKind.Token.VariableDeclaration.VarToken
         "if" -> SyntaxKind.Token.StatementKeywords.IfToken
         "else" -> SyntaxKind.Token.StatementKeywords.ElseToken
+        "while" -> SyntaxKind.Token.StatementKeywords.WhileToken
+        "for" -> SyntaxKind.Token.StatementKeywords.ForToken
 
         else -> {
             SyntaxKind.Token.IdentifierToken

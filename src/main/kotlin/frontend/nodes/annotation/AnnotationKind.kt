@@ -19,5 +19,7 @@ sealed interface AnnotationKind {
         data object  ExpressionStatement : AnnotationStatementKind
         data object  VariableDeclarationStatement : AnnotationStatementKind
         data object  IfStatement : AnnotationStatementKind
+        data object  WhileStatement : AnnotationStatementKind
+        data object  ForStatement : AnnotationStatementKind
     }
 }
