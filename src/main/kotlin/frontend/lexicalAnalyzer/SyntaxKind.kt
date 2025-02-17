@@ -93,7 +93,7 @@ sealed interface SyntaxKind {
     sealed interface Statement : SyntaxKind
     {
         data object BlockStatementStatement : Statement
-        data object ExpressionStatementStatement : Statement
+        data object ExpressionStatement : Statement
         data object VariableDeclarationStatementStatement : Statement
         data object IfStatement : Statement
         data object WhileStatement : Statement

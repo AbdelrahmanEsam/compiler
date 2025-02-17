@@ -12,5 +12,5 @@ class ExpressionStatementSyntax(private val _expressionSyntax: ExpressionSyntax)
         get() = _expressionSyntax
 
     override val kind: SyntaxKind
-        get() = SyntaxKind.Statement.ExpressionStatementStatement
+        get() = SyntaxKind.Statement.ExpressionStatement
 }

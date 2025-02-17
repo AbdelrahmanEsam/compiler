@@ -37,7 +37,6 @@ class Compiler() {
         val evaluator = DIContainer.getEvaluator(globalScope)
         val evaluatedResult = globalScope.statement.evaluate(evaluator)
         return EvaluationResult(evaluatorDiagnostics, evaluatedResult)
-
     }
 
 }

@@ -19,12 +19,12 @@ import com.moj.najiz.frontend.nodes.annotation.scope.AnnotatedScope
 import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationBlockStatement
 import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationDeclarationVariableStatement
 import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationExpressionStatement
+import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationForStatement
 import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationIfStatement
 import com.moj.najiz.frontend.nodes.annotation.statements.AnnotationWhileStatement
 import com.moj.najiz.frontend.nodes.syntax.expressions.AssignmentExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.expressions.BinaryExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.CompilationUnitSyntax
-import com.moj.najiz.frontend.nodes.syntax.SyntaxToken
 import com.moj.najiz.frontend.nodes.syntax.expressions.LiteralExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.expressions.NameExpressionSyntax
 import com.moj.najiz.frontend.nodes.syntax.expressions.NumberExpressionSyntax
@@ -43,15 +43,19 @@ import frontend.nodes.annotation.statements.AnnotationStatement
 import java.util.*
 import kotlin.reflect.typeOf
 
+//todo solve scoping problem in while / for and block statements
+
+
 class Annotator(parentScope: AnnotatedScope? = null) {
 
     private val _diagnostics: Diagnostic.DiagnosticsBag = Diagnostic.DiagnosticsBag()
+
     private var _annotatedScope: AnnotatedScope = DIContainer.getAnnotatedScope(parentScope)
     val annotatedScope: AnnotatedScope
         get() = _annotatedScope
+
     val diagnostics: Diagnostic.DiagnosticsBag
         get() = _diagnostics
-
     companion object {
         fun annotateGlobalScope(
             previousGlobalScope: AnnotatedGlobalScope?,
@@ -59,14 +63,17 @@ class Annotator(parentScope: AnnotatedScope? = null) {
         ): AnnotatedGlobalScope {
             val parentScope = createParentScope(previousGlobalScope)
             DIContainer.getAnnotator(parentScope).apply {
+            val annotatedSyntax = syntax.annotate(this)
                 return AnnotatedGlobalScope(
                     previousGlobalScope,
                     this.diagnostics,
                     this.annotatedScope.variables.toMutableMap(),
-                    syntax.annotate(this)
+                    annotatedSyntax
                 )
             }
         }
+
+
 
         fun createParentScope(previousGlobalScope: AnnotatedGlobalScope?): AnnotatedScope? {
 
@@ -163,19 +170,39 @@ class Annotator(parentScope: AnnotatedScope? = null) {
             actualRightValue!!
         )
 
-        val expressionValue = when(expression.token.kind){
+        val expressionValue = when (expression.token.kind) {
             is SyntaxKind.Token.Math.EqualityTokens.EqualityToken -> actualLeftValue == actualRightValue
             is SyntaxKind.Token.Math.EqualityTokens.NotEqualityToken -> actualLeftValue != actualRightValue
-            is SyntaxKind.Token.Math.EqualityTokens.LessThanToken -> actualLeftValue.toString().toInt() < actualRightValue.toString().toInt()
-            is SyntaxKind.Token.Math.EqualityTokens.LessThanOrEqualToken ->  actualLeftValue.toString().toInt() <= actualRightValue.toString().toInt()
-            is SyntaxKind.Token.Math.EqualityTokens.GreaterThanToken ->  actualLeftValue.toString().toInt() > actualRightValue.toString().toInt()
-            is SyntaxKind.Token.Math.EqualityTokens.GreaterThanOrEqualToken ->  actualLeftValue.toString().toInt() >= actualRightValue.toString().toInt()
-            is SyntaxKind.Token.Math.OperatorsTokens.PlusToken ->  actualLeftValue.toString().toInt() + actualRightValue.toString().toInt()
-            is SyntaxKind.Token.Math.OperatorsTokens.MinusToken ->  actualLeftValue.toString().toInt() - actualRightValue.toString().toInt()
-            is SyntaxKind.Token.Math.OperatorsTokens.MultiplyToken ->  actualLeftValue.toString().toInt() * actualRightValue.toString().toInt()
-            is SyntaxKind.Token.Math.OperatorsTokens.SlashToken ->  actualLeftValue.toString().toInt() / actualRightValue.toString().toInt()
-            is SyntaxKind.Token.BooleanOperatorToken.AndToken ->  actualLeftValue.toString().toBoolean() && actualLeftValue.toString().toBoolean()
-            is SyntaxKind.Token.BooleanOperatorToken.OrToken ->  actualLeftValue.toString().toBoolean() || actualLeftValue.toString().toBoolean()
+            is SyntaxKind.Token.Math.EqualityTokens.LessThanToken -> actualLeftValue.toString()
+                .toInt() < actualRightValue.toString().toInt()
+
+            is SyntaxKind.Token.Math.EqualityTokens.LessThanOrEqualToken -> actualLeftValue.toString()
+                .toInt() <= actualRightValue.toString().toInt()
+
+            is SyntaxKind.Token.Math.EqualityTokens.GreaterThanToken -> actualLeftValue.toString()
+                .toInt() > actualRightValue.toString().toInt()
+
+            is SyntaxKind.Token.Math.EqualityTokens.GreaterThanOrEqualToken -> actualLeftValue.toString()
+                .toInt() >= actualRightValue.toString().toInt()
+
+            is SyntaxKind.Token.Math.OperatorsTokens.PlusToken -> actualLeftValue.toString()
+                .toInt() + actualRightValue.toString().toInt()
+
+            is SyntaxKind.Token.Math.OperatorsTokens.MinusToken -> actualLeftValue.toString()
+                .toInt() - actualRightValue.toString().toInt()
+
+            is SyntaxKind.Token.Math.OperatorsTokens.MultiplyToken -> actualLeftValue.toString()
+                .toInt() * actualRightValue.toString().toInt()
+
+            is SyntaxKind.Token.Math.OperatorsTokens.SlashToken -> actualLeftValue.toString()
+                .toInt() / actualRightValue.toString().toInt()
+
+            is SyntaxKind.Token.BooleanOperatorToken.AndToken -> actualLeftValue.toString()
+                .toBoolean() && actualLeftValue.toString().toBoolean()
+
+            is SyntaxKind.Token.BooleanOperatorToken.OrToken -> actualLeftValue.toString()
+                .toBoolean() || actualLeftValue.toString().toBoolean()
+
             else -> {
                 _diagnostics.reportUndefinedBinaryOperator(
                     textSpan = expression.token.textSpan,
@@ -185,7 +212,6 @@ class Annotator(parentScope: AnnotatedScope? = null) {
                 )
                 return AnnotationLiteralExpression(0)
             }
-
 
 
         }
@@ -328,7 +354,10 @@ class Annotator(parentScope: AnnotatedScope? = null) {
 
 
     fun annotate(forStatement: ForStatementSyntax): AnnotationStatement {
+
+
         forStatement.apply {
+            _annotatedScope = DIContainer.getAnnotatedScope(_annotatedScope)
             val annotatedVariableDeclaration = variableDeclaration.annotate(this@Annotator)
             val conditionResult = condition.annotate(this@Annotator)
             if (getKType(conditionResult) != typeOf<Boolean>()) {
@@ -337,10 +366,14 @@ class Annotator(parentScope: AnnotatedScope? = null) {
                     condition.token.text.toString()
                 )
             }
+            val annotatedThenStatement = thenStatement.annotate(this@Annotator)
             val annotatedTrailingStatement = trailingStatement.annotate(this@Annotator)
-            val annotatedStatement = thenStatement.annotate(this@Annotator)
-
-            return AnnotationWhileStatement(_headStatement = arrayOf(annotatedVariableDeclaration),_condition = conditionResult, _thenStatements =  arrayOf(annotatedStatement , annotatedTrailingStatement))
+            return AnnotationForStatement(
+                _variableDeclaration = annotatedVariableDeclaration,
+                _condition = conditionResult,
+                _trailingExpression = annotatedTrailingStatement,
+                _thenStatements = arrayOf(annotatedThenStatement)
+            )
         }
     }
 
